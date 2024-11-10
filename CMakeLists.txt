@@ -14,6 +14,7 @@ include_directories(src)
 
 add_executable(${PROJ_NAME}
 	src/main.cpp
+	src/gl.c
 )
 
 target_link_libraries(${PROJ_NAME} stdc++exp SDL3-static)

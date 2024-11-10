@@ -10,9 +10,20 @@ set(SDL_SHARED_DEFAULT OFF)
 set(SDL_STATIC_DEFAULT ON)
 add_subdirectory(vendor/SDL)
 
-include_directories(src)
+include_directories(
+	src
+	vendor/imgui
+	vendor/imgui/backends/
+)
 
 add_executable(${PROJ_NAME}
+	vendor/imgui/imgui.cpp
+	vendor/imgui/imgui_demo.cpp
+	vendor/imgui/imgui_draw.cpp
+	vendor/imgui/imgui_tables.cpp
+	vendor/imgui/imgui_widgets.cpp
+	vendor/imgui/backends/imgui_impl_sdl3.cpp
+	vendor/imgui/misc/cpp/imgui_stdlib.cpp
 	src/main.cpp
 	src/gl.c
 )

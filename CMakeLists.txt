@@ -23,6 +23,7 @@ add_executable(${PROJ_NAME}
 	vendor/imgui/imgui_tables.cpp
 	vendor/imgui/imgui_widgets.cpp
 	vendor/imgui/backends/imgui_impl_sdl3.cpp
+	vendor/imgui/backends/imgui_impl_opengl3.cpp
 	vendor/imgui/misc/cpp/imgui_stdlib.cpp
 	src/main.cpp
 	src/gl.c

@@ -16,25 +16,6 @@ include_directories(
 	vendor/imgui/backends/
 )
 
-add_executable(${PROJ_NAME}
-	vendor/imgui/imgui.cpp
-	vendor/imgui/imgui_demo.cpp
-	vendor/imgui/imgui_draw.cpp
-	vendor/imgui/imgui_tables.cpp
-	vendor/imgui/imgui_widgets.cpp
-	vendor/imgui/backends/imgui_impl_sdl3.cpp
-	vendor/imgui/backends/imgui_impl_opengl3.cpp
-	vendor/imgui/misc/cpp/imgui_stdlib.cpp
-	src/gl.c
-	src/main.cpp
-	src/apu.cpp
-	src/cpu.cpp
-	src/bus.cpp
-	src/ppu.cpp
-	src/input.cpp
-	src/color.cpp
-)
-
 add_library(musashi STATIC 
 	src/musashi/softfloat/softfloat.c
 	src/musashi/m68kcpu.c
@@ -58,6 +39,26 @@ add_library(ymfm STATIC
 
 target_include_directories(ymfm PUBLIC
 	src/ymfm
+)
+
+add_executable(${PROJ_NAME}
+	vendor/imgui/imgui.cpp
+	vendor/imgui/imgui_demo.cpp
+	vendor/imgui/imgui_draw.cpp
+	vendor/imgui/imgui_tables.cpp
+	vendor/imgui/imgui_widgets.cpp
+	vendor/imgui/backends/imgui_impl_sdl3.cpp
+	vendor/imgui/backends/imgui_impl_opengl3.cpp
+	vendor/imgui/misc/cpp/imgui_stdlib.cpp
+	src/gl.c
+	src/main.cpp
+	src/render.cpp
+	src/apu.cpp
+	src/cpu.cpp
+	src/bus.cpp
+	src/ppu.cpp
+	src/input.cpp
+	src/color.cpp
 )
 
 target_link_libraries(${PROJ_NAME} stdc++exp SDL3-static musashi ymfm)

@@ -1,63 +1,32 @@
 #include <print>
 
-#include <SDL3/SDL.h>
-#include "gl.h"
-#include "imgui.h"
-#include "imgui_impl_sdl3.h"
-#include "imgui_impl_opengl3.h"
-
-bool show_demo_window = true;
+#include "common.hpp"
+#include "render.hpp"
+#include "bus.hpp"
+#include "ppu.hpp"
+#include "apu.hpp"
+#include "input.hpp"
+#include "color.hpp"
 
 int main(int argc, char *argv[])
 {
-	SDL_Event event;
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-	SDL_Window* window = SDL_CreateWindow("Puma", 500, 500, 
-		SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-	SDL_GLContext gl_context = SDL_GL_CreateContext(window);
-	gladLoadGL(SDL_GL_GetProcAddress);
-	
-	
-	ImGui::CreateContext();
-	SDL_GL_MakeCurrent(window, gl_context);
-    SDL_GL_SetSwapInterval(1); 
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	
-	ImGui_ImplSDL3_InitForOpenGL(window, gl_context);
-    ImGui_ImplOpenGL3_Init("#version 130");
-	
-	while (1) {
-        SDL_PollEvent(&event);
-		ImGui_ImplSDL3_ProcessEvent(&event);
-        if (event.type == SDL_EVENT_QUIT) {
-            break;
-        }
-		ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplSDL3_NewFrame();
-        ImGui::NewFrame();
-		
-        ImGui::ShowDemoWindow(&show_demo_window);
-		
-		ImGui::Render();
-		glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		SDL_GL_SwapWindow(window);
-		//SDL_Delay(100);
+	if(argc == 1) {
+		std::println("No input file provided.");
+		return 0;
 	}
-	ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplSDL3_Shutdown();
-    ImGui::DestroyContext();
-
-    SDL_GL_DestroyContext(gl_context);
-	SDL_DestroyWindow(window);	
-	SDL_Quit();
+	
+	if(!bus::load(argv[1])) {
+		std::println("File couldn't be loaded.");
+		return 0;
+	}
+	
+	render::init();
+	
+	bool shouldContinue;
+	do {
+		shouldContinue = render::frame();
+	} while(shouldContinue);
+	
+	render::deinit();
 	return 0;
 }

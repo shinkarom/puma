@@ -20,11 +20,13 @@ namespace ppu {
 	int bitOffset;
 	
 	void setFullPixel(int x, int y, uint32_t color) {
-		if(x < 0 || x > screenWidth || y<0 || y > screenHeight || (color&0xFF000000!=0xFF000000)) {
+		if(x < 0 || x > screenWidth || y<0 || y > screenHeight || ((color&0xFF000000) == 0x00000000)) {
 			return;
 		}
 		auto dstColor = frame_buf[y*screenWidth+x];
-		frame_buf[y*screenWidth+x] = color::blendARGB(color, dstColor);
+		auto outColor = color::blendARGB(color, dstColor);
+		outColor |= 0xFF000000;
+		frame_buf[y*screenWidth+x] = outColor;
 		//std::cout<<"Set pixel at "<<x<<" "<<y<<" with "<<std::hex<<color<<std::dec<<std::endl;
 	}
 	
@@ -51,9 +53,12 @@ namespace ppu {
 	}
 	
 	void clear(uint32_t color) {
+		/*
 		for(int i = 0; i<screenTotalPixels; i++) {
-			frame_buf[i] = color;
+			frame_buf[i] = (color|0xFF000000);
 		}	
+		*/
+		drawRectangleFilled(0, 0, screenWidth-1, screenHeight-1, color);
 	}
 	
 	void setPixel(int x, int y, uint16_t color) {
@@ -311,6 +316,7 @@ namespace ppu {
 
 
 	void drawRectangleOutline(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color) {
+		//std::cout<<"Will draw rectangle outline"<<std::endl;
 		for (uint16_t x = x1; x <= x2; x++) {
 			setFullPixel(x, y1, color);
 			setFullPixel(x, y2, color);

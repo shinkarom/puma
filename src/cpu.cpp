@@ -17,7 +17,7 @@ std::mt19937 initialize_generator() {
     return std::mt19937(rd());
 }
 
-std::mt19937 gen = initialize_generator();
+std::mt19937 gen;
 
 uint32_t popColor() {
 	return color::palette16bit[bus::pop16()];
@@ -326,6 +326,7 @@ namespace cpu {
 	void init() {
 		m68k_set_cpu_type(M68K_CPU_TYPE_68040);
 		m68k_init();
+		gen = initialize_generator();
 	}
 	
 	void deinit() {

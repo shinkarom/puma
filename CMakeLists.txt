@@ -25,11 +25,42 @@ add_executable(${PROJ_NAME}
 	vendor/imgui/backends/imgui_impl_sdl3.cpp
 	vendor/imgui/backends/imgui_impl_opengl3.cpp
 	vendor/imgui/misc/cpp/imgui_stdlib.cpp
-	src/main.cpp
 	src/gl.c
+	src/main.cpp
+	src/apu.cpp
+	src/cpu.cpp
+	src/bus.cpp
+	src/ppu.cpp
+	src/input.cpp
+	src/color.cpp
 )
 
-target_link_libraries(${PROJ_NAME} stdc++exp SDL3-static)
+add_library(musashi STATIC 
+	src/musashi/softfloat/softfloat.c
+	src/musashi/m68kcpu.c
+	src/musashi/m68kdasm.c
+	src/musashi/m68kfpu.c
+	src/musashi/m68kops.c
+)
+target_include_directories(musashi PUBLIC src/musashi)
+
+add_library(ymfm STATIC
+	src/ymfm/ymfm_adpcm.cpp
+	src/ymfm/ymfm_misc.cpp
+	src/ymfm/ymfm_opl.cpp
+	src/ymfm/ymfm_opm.cpp
+	src/ymfm/ymfm_opn.cpp
+	src/ymfm/ymfm_opq.cpp
+	src/ymfm/ymfm_opz.cpp
+	src/ymfm/ymfm_pcm.cpp
+	src/ymfm/ymfm_ssg.cpp
+)
+
+target_include_directories(ymfm PUBLIC
+	src/ymfm
+)
+
+target_link_libraries(${PROJ_NAME} stdc++exp SDL3-static musashi ymfm)
 
 set_target_properties(${PROJ_NAME} PROPERTIES
 	LINKER_LANGUAGE CXX

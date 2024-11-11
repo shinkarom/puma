@@ -3,6 +3,6 @@
 
 namespace render {
 	void init();
-	bool frame(uint32_t* frameBuffer);
+	bool frame(uint32_t* frameBuffer, int16_t* audioBuffer);
 	void deinit();
 }

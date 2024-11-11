@@ -67,9 +67,9 @@ int main(int argc, char *argv[])
 		cpu::frame();
 		ppu::afterFrame();
 		 apu::afterFrame();
-		audio_callback();
+		int16_t* audioBuffer = apu::callback();
 		
-		shouldContinue = render::frame(ppu::getBuffer());
+		shouldContinue = render::frame(ppu::getBuffer(), audioBuffer);
 	} while(shouldContinue);
 	
 	render::deinit();

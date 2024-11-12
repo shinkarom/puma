@@ -102,11 +102,12 @@ void syscall_handler(int value) {
 		}
 		case API_isPressed: {
 			auto keynum = bus::pop16();
-			if(input::isPressed(keynum)) {
-				bus::push16(1);
-			} else {
-				bus::push16(0);
-			}
+			//if(input::isPressed(keynum)) {
+			//	bus::push16(1);
+			//} else {
+			//	bus::push16(0);
+			//}
+			bus::push16(input::isPressed(keynum));
 			break;
 		}
 		case API_isJustPressed: {
@@ -128,7 +129,7 @@ void syscall_handler(int value) {
 			break;
 		}
 		case API_cls: {
-			auto color = bus::pop32();
+			auto color = popColor();
 			ppu::clear(color);
 			break;
 		}

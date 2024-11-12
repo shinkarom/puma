@@ -8,6 +8,10 @@
 #include "imgui_impl_opengl3.h"
 
 #include "common.hpp"
+#include "input.hpp"
+
+constexpr int msPerFrame = 1000 / framesPerSecond;
+uint64_t lastTime = 0, nextTime = lastTime+msPerFrame;
 
 SDL_Event event;
 SDL_Window* window;
@@ -16,8 +20,6 @@ SDL_AudioStream* stream;
 GLuint gameTexture;
 ImGuiIO io;
 SDL_AudioDeviceID audioID;
-constexpr int msPerFrame = 1000 / framesPerSecond;
-uint64_t lastTime = 0, nextTime = lastTime+msPerFrame;
 
 constexpr SDL_AudioSpec spec = {.format = SDL_AUDIO_S16LE, .channels=2, .freq=audioSampleRate};
 
@@ -70,16 +72,31 @@ namespace render {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight,0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
 		
-		initAudio();
+		initAudio();	
+	}
+	
+	void updateInput() {
+		auto kbState = SDL_GetKeyboardState(nullptr);
+		for (int i = 0; i< numInputs; i++) {
+			input::previouslyPressedInputs[i] = input::pressedInputs[i];
+			input::pressedInputs[i] = kbState[input::inputMapping[i]];
+			input::justPressedInputs[i] = (! input::previouslyPressedInputs[i]) && input::pressedInputs[i];
+			input::justReleasedInputs[i] = input::previouslyPressedInputs[i] & (! input::pressedInputs[i]);
+		}
 	}
 	
 	bool frame(uint32_t* frameBuffer, int16_t* audioBuffer) {
 		bool result = true;
-		SDL_PollEvent(&event);
-		ImGui_ImplSDL3_ProcessEvent(&event);
-        if (event.type == SDL_EVENT_QUIT) {
-            result = false;
-        }
+		while(SDL_PollEvent(&event)) {
+			ImGui_ImplSDL3_ProcessEvent(&event);
+			if (event.type == SDL_EVENT_QUIT) {
+				result = false;
+			}
+		}
+		if(!io.WantCaptureKeyboard) {
+			updateInput();
+		}
+		
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, screenWidth, screenHeight, GL_BGRA, GL_UNSIGNED_BYTE, frameBuffer);
 		ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
@@ -146,7 +163,9 @@ namespace render {
         glClear(GL_COLOR_BUFFER_BIT);
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		SDL_GL_SwapWindow(window);
+		
 		SDL_PutAudioStreamData(stream, audioBuffer, samplesPerFrame*2*2);
+		
 		auto t = SDL_GetTicks();
 		if(t<nextTime) {
 			SDL_Delay(nextTime-t);
@@ -154,6 +173,8 @@ namespace render {
 		nextTime+= msPerFrame;
 		return result;
 	}
+	
+	
 	
 	void deinit() {
 		deinitAudio();

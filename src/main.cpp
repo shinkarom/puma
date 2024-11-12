@@ -9,20 +9,6 @@
 #include "color.hpp"
 #include "cpu.hpp"
 
-void update_input(void)
-{
-	uint16_t state;
-	
-	for (int i = 0; i< numInputs; i++) {
-		input::previouslyPressedInputs[i] = input::pressedInputs[i];
-		//state = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, input::inputMapping[i]);
-		state = 0;
-		input::pressedInputs[i] = (state != 0);
-		input::justPressedInputs[i] = (! input::previouslyPressedInputs[i]) && input::pressedInputs[i];
-		input::justReleasedInputs[i] = input::previouslyPressedInputs[i] & (! input::pressedInputs[i]);
-	}
-}
-
 int main(int argc, char *argv[])
 {
 	if(argc == 1) {
@@ -46,8 +32,7 @@ int main(int argc, char *argv[])
 	
 	bool shouldContinue;
 	do {
-		update_input();
-	   input::beforeFrame();
+	  // input::beforeFrame();
 		
 		ppu::beforeFrame();
 		

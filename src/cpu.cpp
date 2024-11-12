@@ -12,12 +12,7 @@
 #include "input.hpp"
 #include "color.hpp"
 
-std::mt19937 initialize_generator() {
-    std::random_device rd;
-    return std::mt19937(rd());
-}
-
-std::mt19937 gen;
+std::default_random_engine gen;
 
 uint32_t popColor() {
 	return color::palette16bit[bus::pop16()];
@@ -260,6 +255,7 @@ void syscall_handler(int value) {
 			auto mmin = bus::pop32();
 			std::uniform_int_distribution<uint32_t> dist(mmin, mmax);
 			auto r = dist(gen);
+			//std::cout<<mmin<<" "<<mmax<<" "<<r<<std::endl;
 			bus::push32(r);
 			break;
 		}
@@ -326,7 +322,8 @@ namespace cpu {
 	void init() {
 		m68k_set_cpu_type(M68K_CPU_TYPE_68040);
 		m68k_init();
-		gen = initialize_generator();
+		std::random_device rd;
+		gen = std::default_random_engine(rd());
 	}
 	
 	void deinit() {
@@ -334,10 +331,8 @@ namespace cpu {
 	}
 	
 	void frame() {
-		auto x = m68k_execute(cyclesPerFrame);
+		m68k_execute(cyclesPerFrame);
 		m68k_set_irq(2);
-		//auto pc = m68k_get_reg(nullptr, M68K_REG_PC);
-		//std::cout<<x<<" "<<pc<<" "<<frameNum<<std::endl;
 	}
 	
 	void onLoad() {

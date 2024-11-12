@@ -23,19 +23,6 @@ void update_input(void)
 	}
 }
 
-void audio_callback(void)
-{
-   int16_t* buf = apu::callback();
-   /*
-   for(int i = 0; i<samplesPerFrame;i++){
-		std::cout<<buf[i*2]<<" "<<buf[i*2+1]<<std::endl;
-	}
-	std::cout<<"---"<<std::endl;
-	*/
-	//audio_batch_cb(buf, samplesPerFrame);
-   
-}
-
 int main(int argc, char *argv[])
 {
 	if(argc == 1) {

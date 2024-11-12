@@ -106,7 +106,7 @@ namespace render {
 					// Open file action
 				}
 				if (ImGui::MenuItem("Exit")) {
-					// Exit action
+					result = false;
 				}
 				ImGui::EndMenu();
 			}

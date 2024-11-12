@@ -171,22 +171,33 @@ namespace color {
 	}
 	
 	uint32_t blendARGB(uint32_t src, uint32_t dst) {
+		uint8_t outR, outG, outB;
+		
 		uint8_t srcA = (src >> 24) & 0xFF;
 		uint8_t srcR = (src >> 16) & 0xFF;
 		uint8_t srcG = (src >> 8) & 0xFF;
 		uint8_t srcB = src & 0xFF;
-
+		
+		if(srcA == 0xFF) {
+			return (0xFF << 24) | (srcR << 16) | (srcG << 8) | srcB;
+		}
+		
 		uint8_t dstA = (dst >> 24) & 0xFF;
 		uint8_t dstR = (dst >> 16) & 0xFF;
 		uint8_t dstG = (dst >> 8) & 0xFF;
 		uint8_t dstB = dst & 0xFF;
+		
+		if(srcA == 0x00) {
+			return (0xFF << 24) | (dstR << 16) | (dstG << 8) | dstB;
+		}
 
-		uint8_t outA = srcA + dstA * (255 - srcA) / 255;
-		uint8_t outR = (srcR * srcA + dstR * dstA * (255 - srcA) / 255) / outA;
-		uint8_t outG = (srcG * srcA + dstG * dstA * (255 - srcA) / 255) / outA;
-		uint8_t outB = (srcB * srcA + dstB * dstA * (255 - srcA) / 255) / outA;
-
-		return (outA << 24) | (outR << 16) | (outG << 8) | outB;
+		//outA = srcA + dstA * (255 - srcA) / 255;
+		outR = (srcR * srcA + dstR * (255 - srcA) / 255);
+		outG = (srcG * srcA + dstG * (255 - srcA) / 255);
+		outB = (srcB * srcA + dstB * (255 - srcA) / 255);
+		auto result = (0xFF << 24) | (outR << 16) | (outG << 8) | outB;
+		//std::cout<<std::hex<<src<<" "<<dst<<" "<<result<<std::endl;
+		return result;
 	}
 	
 }

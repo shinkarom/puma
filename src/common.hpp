@@ -26,4 +26,4 @@ constexpr auto syscallAddress = 0xFFFFFFFC;
 
 constexpr int fakeDMCStartAddress = 0xC000;
 
-constexpr auto transparentColor = 0xFF000000;
+constexpr auto transparentColor = 0x00000000;

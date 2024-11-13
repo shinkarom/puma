@@ -20,6 +20,7 @@ SDL_AudioStream* stream;
 GLuint gameTexture;
 ImGuiIO io;
 SDL_AudioDeviceID audioID;
+bool isFullscreen = false;
 
 constexpr SDL_AudioSpec spec = {.format = SDL_AUDIO_S16LE, .channels=2, .freq=audioSampleRate};
 
@@ -91,6 +92,21 @@ namespace render {
 			ImGui_ImplSDL3_ProcessEvent(&event);
 			if (event.type == SDL_EVENT_QUIT) {
 				result = false;
+			} else if (event.type == SDL_EVENT_KEY_UP) {
+                // Toggle fullscreen on F12 or Alt+Enter
+                if (event.key.scancode == SDL_SCANCODE_F12 ||
+                    (event.key.scancode == SDL_SCANCODE_RETURN && (event.key.mod & SDL_KMOD_ALT))) {
+                    // Toggle between fullscreen and windowed
+                    isFullscreen = !isFullscreen;
+                    if (isFullscreen) {
+                        SDL_SetWindowFullscreen(window, true);
+                    } else {
+                        SDL_SetWindowFullscreen(window, false);  // Set back to windowed
+                    }
+                }
+				if(isFullscreen && event.key.scancode == SDL_SCANCODE_ESCAPE) {
+					SDL_SetWindowFullscreen(window, false); 
+				}
 			}
 		}
 		if(!io.WantCaptureKeyboard) {
@@ -106,18 +122,22 @@ namespace render {
 		
 		ImGui::SetNextWindowPos(ImVec2(0, 0));
 		ImGui::SetNextWindowSize(ImVec2(w, h));
-		ImGui::Begin("Puma", nullptr, 
-			ImGuiWindowFlags_NoTitleBar
+		auto flags = ImGuiWindowFlags_NoTitleBar
 			| ImGuiWindowFlags_NoResize
 			| ImGuiWindowFlags_NoMove
 			| ImGuiWindowFlags_NoCollapse
 			| ImGuiWindowFlags_NoScrollbar
-			| ImGuiWindowFlags_NoScrollWithMouse
-			| ImGuiWindowFlags_MenuBar
+			| ImGuiWindowFlags_NoScrollWithMouse;
 			//ImGuiWindowFlags_NoBackground
-		);
+		if(!isFullscreen) {
+			flags |= ImGuiWindowFlags_MenuBar;
+			ImGui::GetStyle().WindowPadding = ImVec2(8, 8);
+		} else {
+			ImGui::GetStyle().WindowPadding = ImVec2(0, 0);
+		}
+		ImGui::Begin("Puma", nullptr, flags);
 		
-		if (ImGui::BeginMenuBar()) {
+		if (!isFullscreen &&ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
 				//if (ImGui::MenuItem("Open")) {
 					// Open file action
@@ -133,7 +153,8 @@ namespace render {
 		// Get the size of available region
 		ImVec2 availableSize = ImGui::GetContentRegionAvail();
 		
-		ImGui::BeginChild("ImageRegion", ImVec2(availableSize.x, availableSize.y - statusBarHeight), false);
+		auto imageHeight = isFullscreen ? availableSize.y : availableSize.y - statusBarHeight;
+		ImGui::BeginChild("ImageRegion", ImVec2(availableSize.x, imageHeight), false);
 		ImVec2 imageSize = ImGui::GetContentRegionAvail();
 
 		// Determine the maximum size that maintains the aspect ratio
@@ -149,10 +170,13 @@ namespace render {
 		ImGui::Image(gameTexture, scaledSize);  
 		ImGui::EndChild();
 		
-		ImGui::SetCursorPosY(ImGui::GetWindowHeight() - statusBarHeight);
-		ImGui::BeginChild("StatusBar", ImVec2(availableSize.x, statusBarHeight), false);
-		ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);  // Example status bar text
-		ImGui::EndChild();
+		if(!isFullscreen) {
+			ImGui::SetCursorPosY(ImGui::GetWindowHeight() - statusBarHeight);
+			ImGui::BeginChild("StatusBar", ImVec2(availableSize.x, statusBarHeight), false);
+			ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);  // Example status bar text
+			ImGui::EndChild();
+		}
+		
 		
 		ImGui::End();
 		

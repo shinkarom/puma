@@ -21,6 +21,7 @@ uint32_t popColor() {
 enum {
 	API_printRegisters = 0,
 	API_writeAudioRegister,
+	API_endFrame,
 	API_isPressed,
 	API_isJustPressed,
 	API_isJustReleased,
@@ -91,6 +92,10 @@ void syscall_handler(int value) {
 			auto value = bus::pop16();
 			auto reg = bus::pop16();
 			apu::writeReg(reg, value);
+			break;
+		}
+		case API_endFrame: {
+			m68k_end_timeslice();
 			break;
 		}
 		case API_isPressed: {

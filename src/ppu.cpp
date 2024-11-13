@@ -14,12 +14,12 @@ namespace ppu {
 	
 	static uint32_t *frame_buf;
 	
-	uint32_t palette1bit[2] = {0x00000000, 0xFFFFFFFF};
-	uint32_t palette2bit[4] = {0x00000000, 0x00000000, 0xFF888888, 0xFFFFFFFF};
+	uint32_t palette1bit[2] = {transparentColor, 0xFFFFFFFF};
+	uint32_t palette2bit[4] = {transparentColor, transparentColor, 0xFF000000, 0xFFFFFFFF};
 	
 	int bitOffset;
 	
-	void setFullPixel(int x, int y, uint32_t color) {
+	void inline setFullPixel(int x, int y, uint32_t color) {
 		if(x < 0 || x > screenWidth || y<0 || y > screenHeight || ((color&0xFF000000) == 0x00000000)) {
 			return;
 		}
@@ -162,16 +162,13 @@ namespace ppu {
 		return frame_buf;
 	}
 	
-	void set1bitPalette(uint32_t color1, uint32_t color2) {
-		palette1bit[0] = color1;
-		palette1bit[1] = color2;
+	void set1bitPalette(uint32_t color) {
+		palette1bit[1] = color;
 	}
 	
-	void set2bitPalette(uint32_t color1, uint32_t color2, uint32_t color3, uint32_t color4) {
-		palette2bit[0] = color1;
-		palette2bit[1] = color2;
-		palette2bit[2] = color3;
-		palette2bit[3] = color4;
+	void set2bitPalette(uint32_t color1, uint32_t color2) {
+		palette2bit[2] = color1;
+		palette2bit[3] = color2;
 	}
 	
 	void drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color) {
@@ -366,10 +363,8 @@ namespace ppu {
 	}
 
 	void drawText(uint32_t fontOrigin, int16_t fontWidth, int16_t fontHeight, uint32_t textOrigin, uint16_t x, uint16_t y, uint32_t color) {
-		uint32_t oldPalette[2];
-		oldPalette[0] = palette1bit[0];
-		oldPalette[1] = palette1bit[1];
-		palette1bit[0] = transparentColor;
+		uint32_t oldColor;
+		oldColor = palette1bit[1];
 		palette1bit[1] = color;
 		auto letterOffset = textOrigin;
 		auto xOffset = x;
@@ -390,8 +385,7 @@ namespace ppu {
 				break;
 			}
 		} while(true);
-		palette1bit[0] = oldPalette[0];
-		palette1bit[1] = oldPalette[1];
+		palette1bit[1] = oldColor;
 	}
 	
 }

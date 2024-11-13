@@ -119,9 +119,9 @@ namespace render {
 		
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
-				if (ImGui::MenuItem("Open")) {
+				//if (ImGui::MenuItem("Open")) {
 					// Open file action
-				}
+				//}
 				if (ImGui::MenuItem("Exit")) {
 					result = false;
 				}
@@ -135,11 +135,10 @@ namespace render {
 		
 		ImGui::BeginChild("ImageRegion", ImVec2(availableSize.x, availableSize.y - statusBarHeight), false);
 		ImVec2 imageSize = ImGui::GetContentRegionAvail();
-		//float imageAspect = 160.0f / 160.0f;  // Original aspect ratio (square)
 
 		// Determine the maximum size that maintains the aspect ratio
-		float scale = std::min(imageSize.x / 160.0f, imageSize.y / 160.0f);
-		ImVec2 scaledSize = ImVec2(160.0f * scale, 160.0f * scale);
+		float scale = std::min(imageSize.x * 1.0f / screenWidth, imageSize.y * 1.0f / screenHeight);
+		ImVec2 scaledSize = ImVec2(screenWidth * 1.0f * scale, screenHeight * 1.0f * scale);
 
 		// Center the image in the available space if there’s extra room
 		ImVec2 padding = ImVec2((imageSize.x - scaledSize.x) / 2.0f, (imageSize.y - scaledSize.y) / 2.0f);

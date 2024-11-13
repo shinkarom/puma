@@ -144,17 +144,14 @@ void syscall_handler(int value) {
 			break;
 		}
 		case API_set1bitPalette: {
-			auto color2 = popColor();
-			auto color1 = popColor();
-			ppu::set1bitPalette(color1, color2);
+			auto color = popColor();
+			ppu::set1bitPalette(color);
 			break;
 		}
 		case API_set2bitPalette: {
-			auto color4 = popColor();
-			auto color3 = popColor();
 			auto color2 = popColor();
 			auto color1 = popColor();
-			ppu::set2bitPalette(color1, color2, color3, color4);
+			ppu::set2bitPalette(color1, color2);
 			break;
 		}
 		case API_drawLine: {

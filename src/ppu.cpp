@@ -24,7 +24,8 @@ namespace ppu {
 			return;
 		}
 		auto dstColor = frame_buf[y*screenWidth+x];
-		auto outColor = color::blendARGB(color, dstColor);
+		auto outColor = color;
+		//auto outColor = color::blendARGB(color, dstColor);
 		frame_buf[y*screenWidth+x] = outColor;
 		//std::cout<<"Set pixel at "<<x<<" "<<y<<" with "<<std::hex<<color<<std::dec<<std::endl;
 	}

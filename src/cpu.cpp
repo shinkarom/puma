@@ -87,13 +87,6 @@ void syscall_handler(int value) {
 			printRegisters();
 			break;
 		}
-		case API_setPixel: {
-			auto color = popColor();
-			auto y = bus::pop16();
-			auto x = bus::pop16();
-			ppu::setPixel(x, y, color);
-			break; 
-		}
 		case API_writeAudioRegister: {
 			auto value = bus::pop16();
 			auto reg = bus::pop16();

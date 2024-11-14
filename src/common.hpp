@@ -4,8 +4,8 @@
 
 constexpr int numInputs = 12;
 
-constexpr auto screenWidth = 160;
-constexpr auto screenHeight = 160;
+constexpr auto screenWidth = 224;
+constexpr auto screenHeight = 224;
 constexpr auto screenTotalPixels = screenWidth * screenHeight;
 
 constexpr auto audioSampleRate = 44100;
@@ -24,6 +24,6 @@ constexpr auto numApuRegisters = 0x106;
 constexpr auto syscallStackAddress = 0xFFFFFFF9;
 constexpr auto syscallAddress = 0xFFFFFFFC;
 
-constexpr int fakeDMCStartAddress = 0xC000;
-
 constexpr auto transparentColor = 0x00000000;
+
+extern bool isPaused;

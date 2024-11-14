@@ -32,16 +32,20 @@ int main(int argc, char *argv[])
 	
 	bool shouldContinue;
 	do {
-	  // input::beforeFrame();
+		if(!isPaused) {
+			// input::beforeFrame();
 		
-		ppu::beforeFrame();
-		
-		cpu::frame();
-		ppu::afterFrame();
-		 apu::afterFrame();
-		int16_t* audioBuffer = apu::callback();
-		
-		shouldContinue = render::frame(ppu::getBuffer(), audioBuffer);
+			ppu::beforeFrame();
+			
+			cpu::frame();
+			ppu::afterFrame();
+			 apu::afterFrame();
+			int16_t* audioBuffer = apu::callback();
+			
+			render::renderAudio(audioBuffer);
+		}
+	  
+		shouldContinue = render::frame(ppu::getBuffer());
 	} while(shouldContinue);
 	
 	render::deinit();

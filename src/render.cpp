@@ -24,6 +24,7 @@ SDL_AudioDeviceID audioID;
 uint64_t lastTime = 0;
 uint64_t nextTime = lastTime+msPerFrame;
 bool isFullscreen = false;
+bool isPaused = false;
 
 void initSDL() {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD);
@@ -83,8 +84,6 @@ void inline handleFrameTiming() {
 	nextTime+= msPerFrame;
 }
 
-
-
 bool drawMenuBar(bool input) {
 	bool result = input;
 	if (!isFullscreen &&ImGui::BeginMenuBar()) {
@@ -100,6 +99,12 @@ bool drawMenuBar(bool input) {
 		if (ImGui::BeginMenu("View")) {
 			if (ImGui::MenuItem("Fullscreen")) {
 				isFullscreen = true;
+			}
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Emulation")) {
+			if (ImGui::MenuItem("Pause", nullptr, isPaused)) {
+				isPaused = !isPaused;
 			}
 			ImGui::EndMenu();
 		}
@@ -127,7 +132,7 @@ namespace render {
 		}
 	}
 	
-	bool frame(uint32_t* frameBuffer, int16_t* audioBuffer) {
+	bool frame(uint32_t* frameBuffer) {
 		bool wasFullscreen = isFullscreen;
 		bool result = true;
 		while(SDL_PollEvent(&event)) {
@@ -161,8 +166,8 @@ namespace render {
 			| ImGuiWindowFlags_NoMove
 			| ImGuiWindowFlags_NoCollapse
 			| ImGuiWindowFlags_NoScrollbar
-			| ImGuiWindowFlags_NoScrollWithMouse;
-			//ImGuiWindowFlags_NoBackground
+			| ImGuiWindowFlags_NoScrollWithMouse
+			| ImGuiWindowFlags_NoBackground;
 		if(!isFullscreen) {
 			flags |= ImGuiWindowFlags_MenuBar;
 		}
@@ -203,8 +208,6 @@ namespace render {
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		SDL_GL_SwapWindow(window);
 		
-		SDL_PutAudioStreamData(stream, audioBuffer, samplesPerFrame*2*2);
-		
 		if(isFullscreen != wasFullscreen) {
 			SDL_SetWindowFullscreen(window, isFullscreen);
 		}
@@ -212,6 +215,10 @@ namespace render {
 		handleFrameTiming();
 		
 		return result;
+	}
+	
+	void renderAudio(int16_t* audioBuffer) {
+		SDL_PutAudioStreamData(stream, audioBuffer, samplesPerFrame*2*2);
 	}
 	
 	void deinit() {

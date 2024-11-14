@@ -4,9 +4,12 @@
 
 constexpr int numInputs = 12;
 
-constexpr auto screenWidth = 224;
-constexpr auto screenHeight = 224;
-constexpr auto screenTotalPixels = screenWidth * screenHeight;
+constexpr auto maxScreenWidth = 256;
+constexpr auto maxScreenHeight = 256;
+constexpr auto maxScreenTotalPixels = maxScreenWidth * maxScreenHeight;
+
+constexpr auto defaultScreenWidth = 224;
+constexpr auto defaultScreenHeight = 224;
 
 constexpr auto audioSampleRate = 44100;
 constexpr auto framesPerSecond = 60;
@@ -27,3 +30,8 @@ constexpr auto syscallAddress = 0xFFFFFFFC;
 constexpr auto transparentColor = 0x00000000;
 
 extern bool isPaused;
+
+extern int screenWidth;
+extern int screenHeight;
+extern int screenTotalPixels;
+extern bool haveDimensionsChanged;

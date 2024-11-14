@@ -82,7 +82,7 @@ namespace apu {
 		
 		chip.writeReg(reg, value);
 		
-		//std::cout<<"Audio register "<<std::hex<<reg<<" with "<<value<<std::dec<<std::endl;
+			std::cout<<"Audio register "<<std::hex<<reg<<" with "<<value<<std::dec<<std::endl;
 	}
 	
 }

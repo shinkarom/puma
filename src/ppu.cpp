@@ -10,6 +10,10 @@
 constexpr auto HFLIP_MASK = 1<<0;
 constexpr auto VFLIP_MASK = 1<<1;
 
+int screenWidth;
+int screenHeight;
+int screenTotalPixels;
+
 namespace ppu {
 	
 	static uint32_t *frame_buf;
@@ -31,7 +35,10 @@ namespace ppu {
 	}
 	
 	void init() {
-		 frame_buf = new uint32_t[screenTotalPixels];
+		screenWidth = defaultScreenWidth;
+		screenHeight = defaultScreenHeight;
+		screenTotalPixels = screenWidth * screenHeight;
+		 frame_buf = new uint32_t[maxScreenTotalPixels];
 		 memset(frame_buf,0,screenTotalPixels*sizeof(uint32_t));
 		 
 	}
@@ -387,6 +394,16 @@ namespace ppu {
 			}
 		} while(true);
 		palette1bit[1] = oldColor;
+	}
+	
+	void setDimensions(int w, int h) {
+		if(w > maxScreenWidth || h > maxScreenHeight) {
+			return;
+		}
+		screenWidth = w;
+		screenHeight = h;
+		screenTotalPixels = screenWidth * screenHeight;
+		haveDimensionsChanged = true;
 	}
 	
 }

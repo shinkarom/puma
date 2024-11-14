@@ -14,38 +14,13 @@
 
 std::default_random_engine gen;
 
-uint32_t popColor() {
-	return color::palette16bit[bus::pop16()];
-}
-
-enum {
-	API_printRegisters = 0,
-	API_writeAudioRegister,
-	API_endFrame,
-	API_isPressed,
-	API_isJustPressed,
-	API_isJustReleased,
-	API_set1bitPalette,
-	API_set2bitPalette,
-	API_cls,
-	API_setPixel,
-	API_drawSprite,
-	API_drawLine,
-	API_drawCircle,
-	API_drawCircleOutline,
-	API_drawEllipse,
-	API_drawEllipseOutline,
-	API_drawRectangle, 
-	API_drawRectangleOutline,
-	API_drawTriangle,
-	API_drawTriangleOutline,
-	API_drawText,
-	API_getRandomNumber,
-};
+//#define DEBUG 
 
 void printRegisters() {
 	std::cout<<"---"<<std::hex<<std::endl;
 	uint32_t t;
+	t = m68k_get_reg(nullptr, M68K_REG_PC);
+	std::cout<<t<<std::endl;;
 	t = m68k_get_reg(nullptr, M68K_REG_D0);
 	std::cout<<t<<" ";
 	t = m68k_get_reg(nullptr, M68K_REG_D1);
@@ -81,6 +56,42 @@ void printRegisters() {
 	std::cout<<std::dec<<"---"<<std::endl;
 }
 
+void instr_callback(unsigned int pc) {
+	//std::cout<<std::hex<<"pc="<<pc<<std::dec<<std::endl;
+	printRegisters();
+}
+
+uint32_t popColor() {
+	return color::palette16bit[bus::pop16()];
+}
+
+enum {
+	API_printRegisters = 0,
+	API_writeAudioRegister,
+	API_endFrame,
+	API_isPressed,
+	API_isJustPressed,
+	API_isJustReleased,
+	API_set1bitPalette,
+	API_set2bitPalette,
+	API_cls,
+	API_setPixel,
+	API_drawSprite,
+	API_drawLine,
+	API_drawCircle,
+	API_drawCircleOutline,
+	API_drawEllipse,
+	API_drawEllipseOutline,
+	API_drawRectangle, 
+	API_drawRectangleOutline,
+	API_drawTriangle,
+	API_drawTriangleOutline,
+	API_drawText,
+	API_getRandomNumber,
+	API_setDimensions,
+	API_printStack,
+};
+
 void syscall_handler(int value) {
 	//std::cout<<"Syscall "<<value<<" triggered."<<std::endl;
 	switch(value) {
@@ -95,6 +106,7 @@ void syscall_handler(int value) {
 			break;
 		}
 		case API_endFrame: {
+			//std::cout<<"ending frame at "<<(m68k_cycles_run())<<std::endl;
 			m68k_end_timeslice();
 			break;
 		}
@@ -159,6 +171,7 @@ void syscall_handler(int value) {
 			auto y1 = bus::pop16();
 			auto x1 = bus::pop16();
 			ppu::drawLine(x1, y1, x2, y2, color);
+			break;
 		}
 		case API_drawCircle: {
 			auto color = popColor();
@@ -255,6 +268,29 @@ void syscall_handler(int value) {
 			bus::push32(r);
 			break;
 		}
+		case API_setDimensions: {
+			auto mode = bus::pop16();
+			auto w = (mode & 0xF0) + 16;
+			auto h = ((mode & 0x0F) * 16) + 16;
+			ppu::setDimensions(w, h);
+			break;
+		}
+		case API_printStack: {
+			std::cout<<"---"<<std::hex<<std::endl;
+			auto t = m68k_get_reg(nullptr, M68K_REG_SP);
+			for(int i = 0; i<10; i++) {
+				auto r = bus::read16(t+2*i);
+				std::cout<<r<<" ";
+			}
+			std::cout<<std::endl;
+			for(int i = 0; i<5; i++) {
+				auto r = bus::read32(t+4*i);
+				std::cout<<r<<" ";
+			}
+			std::cout<<std::endl;
+			std::cout<<"sp="<<t<<" "<<std::dec<<"---"<<std::endl;
+			break;
+		}
 		default:
 			break;
 	}
@@ -320,6 +356,9 @@ namespace cpu {
 		m68k_init();
 		std::random_device rd;
 		gen = std::default_random_engine(rd());
+		#ifdef DEBUG
+		m68k_set_instr_hook_callback(&instr_callback);
+		#endif
 	}
 	
 	void deinit() {

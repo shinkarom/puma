@@ -62,7 +62,7 @@ void instr_callback(unsigned int pc) {
 }
 
 uint32_t popColor() {
-	return bus::pop32();
+	return color::palette16bit[bus::pop16()];
 }
 
 enum {

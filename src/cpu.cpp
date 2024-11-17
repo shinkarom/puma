@@ -89,6 +89,8 @@ enum {
 	API_drawText,
 	API_getRandomNumber,
 	API_printStack,
+	API_note_on,
+	API_note_off,
 };
 
 void syscall_handler(int value) {
@@ -283,6 +285,19 @@ void syscall_handler(int value) {
 			std::cout<<"sp="<<t<<" "<<std::dec<<"---"<<std::endl;
 			break;
 		}
+		case API_note_on: {
+			int vel = bus::pop8();
+			int keyNum = bus::pop8();
+			int presetNum = bus::pop16();
+			apu::noteOn(presetNum, keyNum, vel);
+			break;
+		}
+		case API_note_off: {
+			int keyNum = bus::pop8();
+			int presetNum = bus::pop16();
+			apu::noteOff(presetNum, keyNum);
+			break;
+		}
 		default:
 			break;
 	}
@@ -367,4 +382,5 @@ namespace cpu {
 		bus::write32(0x4, codeOffset);
 		m68k_pulse_reset();
 	}
+	
 }

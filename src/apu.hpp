@@ -9,6 +9,6 @@ namespace apu {
 	void afterFrame();
 	int16_t* callback();
 	void writeReg(int reg, int value);
-	
-	void initChannel(int chanNum, uint32_t start, uint32_t end, int smplRate);
+	void noteOn(int presetNum, int keyNum, int vel);
+	void noteOff(int presetNum, int keyNum);
 }

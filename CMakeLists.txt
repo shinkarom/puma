@@ -25,22 +25,6 @@ add_library(musashi STATIC
 )
 target_include_directories(musashi PUBLIC src/musashi)
 
-add_library(ymfm STATIC
-	src/ymfm/ymfm_adpcm.cpp
-	src/ymfm/ymfm_misc.cpp
-	src/ymfm/ymfm_opl.cpp
-	src/ymfm/ymfm_opm.cpp
-	src/ymfm/ymfm_opn.cpp
-	src/ymfm/ymfm_opq.cpp
-	src/ymfm/ymfm_opz.cpp
-	src/ymfm/ymfm_pcm.cpp
-	src/ymfm/ymfm_ssg.cpp
-)
-
-target_include_directories(ymfm PUBLIC
-	src/ymfm
-)
-
 add_executable(${PROJ_NAME}
 	vendor/imgui/imgui.cpp
 	vendor/imgui/imgui_demo.cpp
@@ -52,6 +36,7 @@ add_executable(${PROJ_NAME}
 	vendor/imgui/misc/cpp/imgui_stdlib.cpp
 	src/gl.c
 	src/tsf.c
+	src/pathfind.cpp
 	src/main.cpp
 	src/render.cpp
 	src/apu.cpp
@@ -62,7 +47,7 @@ add_executable(${PROJ_NAME}
 	src/color.cpp
 )
 
-target_link_libraries(${PROJ_NAME} stdc++exp SDL3-static musashi ymfm)
+target_link_libraries(${PROJ_NAME} stdc++exp SDL3-static musashi)
 
 set_target_properties(${PROJ_NAME} PROPERTIES
 	LINKER_LANGUAGE CXX

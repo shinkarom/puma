@@ -51,6 +51,7 @@ add_executable(${PROJ_NAME}
 	vendor/imgui/backends/imgui_impl_opengl3.cpp
 	vendor/imgui/misc/cpp/imgui_stdlib.cpp
 	src/gl.c
+	src/tsf.c
 	src/main.cpp
 	src/render.cpp
 	src/apu.cpp

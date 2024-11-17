@@ -5,6 +5,7 @@
 #include "common.hpp"
 #include "bus.hpp"
 #include "ymfm_opl.h"
+#include "tsf.h"
 
 int16_t audioBuffer[samplesPerFrame*2];
 

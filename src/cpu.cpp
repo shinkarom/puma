@@ -88,7 +88,6 @@ enum {
 	API_drawTriangleOutline,
 	API_drawText,
 	API_getRandomNumber,
-	API_setDimensions,
 	API_printStack,
 };
 
@@ -266,13 +265,6 @@ void syscall_handler(int value) {
 			auto r = dist(gen);
 			//std::cout<<mmin<<" "<<mmax<<" "<<r<<std::endl;
 			bus::push32(r);
-			break;
-		}
-		case API_setDimensions: {
-			auto mode = bus::pop16();
-			auto w = (mode & 0xF0) + 16;
-			auto h = ((mode & 0x0F) * 16) + 16;
-			ppu::setDimensions(w, h);
 			break;
 		}
 		case API_printStack: {

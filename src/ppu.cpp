@@ -9,10 +9,7 @@
 
 constexpr auto HFLIP_MASK = 1<<0;
 constexpr auto VFLIP_MASK = 1<<1;
-
-int screenWidth;
-int screenHeight;
-int screenTotalPixels;
+constexpr auto BITMASK_MASK = 1<<2;
 
 namespace ppu {
 	
@@ -35,10 +32,7 @@ namespace ppu {
 	}
 	
 	void init() {
-		screenWidth = defaultScreenWidth;
-		screenHeight = defaultScreenHeight;
-		screenTotalPixels = screenWidth * screenHeight;
-		 frame_buf = new uint32_t[maxScreenTotalPixels];
+		 frame_buf = new uint32_t[screenTotalPixels];
 		 memset(frame_buf,0,screenTotalPixels*sizeof(uint32_t));
 		 
 	}
@@ -115,42 +109,17 @@ namespace ppu {
 		auto yy = y_start;
 		uint32_t color;
 		for(int _i = 0; _i < w * h; _i++) {
-			switch((options&0xFF00)>>8) {
-				case 1: {
-					auto c = bus::read8(pxa);
-					color = color::palette8bit[c];
-					pxa += 1;
-					break;
-				}
-				case 2: {
-					uint8_t byte_data = bus::read8(pxa);
-					uint8_t pixel_data = (byte_data >> (4 * (1 - bitOffset))) & 0x0F;
-					color = color::palette4bit[pixel_data];
-					bitOffset = 1 - bitOffset; // Toggle between 0 and 1
-					if (bitOffset == 0) pxa += 1; // Move to next byte after 2 pixels
-					break;
-				}
-				case 3: {
-					uint8_t byte_data = bus::read8(pxa);
-					uint8_t pixel_data = (byte_data >> (2 * (3 - bitOffset))) & 0x03;
-					color = palette2bit[pixel_data];
-					bitOffset = (bitOffset + 1) % 4; // Move to the next 2-bit position
-					if (bitOffset == 0) pxa += 1; // Move to next byte after 4 pixels
-					break;
-				}
-				case 4: { 
-					uint8_t byte_data = bus::read8(pxa);
-					uint8_t pixel_data = (byte_data >> (7 - bitOffset)) & 0x01;
-					color = palette1bit[pixel_data];
-					bitOffset = (bitOffset + 1) % 8; // Move to the next 1-bit position
-					if (bitOffset == 0) pxa += 1; // Move to next byte after 8 pixels
-					break;
-				}
-				default: {
-					color = color::palette16bit[bus::read16(pxa)];
-					pxa += 2;
-					break;
-				}
+			if(options & BITMASK_MASK) {
+				uint8_t byte_data = bus::read8(pxa);
+				uint8_t pixel_data = (byte_data >> (7 - bitOffset)) & 0x01;
+				color = palette1bit[pixel_data];
+				bitOffset = (bitOffset + 1) % 8; // Move to the next 1-bit position
+				if (bitOffset == 0) pxa += 1; // Move to next byte after 8 pixels
+				//std::cout<<std::hex<<(int)(pxa)<<" "<<bitOffset<<" "<<color<<std::dec<<std::endl;
+			}
+			else {
+				color = color::palette16bit[bus::read16(pxa)];
+				pxa += 2;
 			}
 			
 			//std::cout<<xx<<" "<<yy<<" "<<std::hex<<color<<std::dec<<std::endl;
@@ -385,7 +354,7 @@ namespace ppu {
 			if(letter<32 || letter>127) {
 				
 			} else {
-				drawSprite(letterAddress, xOffset, y, fontWidth, fontHeight, 0x0400);
+				drawSprite(letterAddress, xOffset, y, fontWidth, fontHeight, BITMASK_MASK);
 			}
 			letterOffset++;
 			xOffset+=fontWidth;
@@ -394,16 +363,6 @@ namespace ppu {
 			}
 		} while(true);
 		palette1bit[1] = oldColor;
-	}
-	
-	void setDimensions(int w, int h) {
-		if(w > maxScreenWidth || h > maxScreenHeight) {
-			return;
-		}
-		screenWidth = w;
-		screenHeight = h;
-		screenTotalPixels = screenWidth * screenHeight;
-		haveDimensionsChanged = true;
 	}
 	
 }

@@ -24,8 +24,7 @@ SDL_AudioDeviceID audioID;
 uint64_t lastTime = 0;
 uint64_t nextTime = lastTime+msPerFrame;
 bool isFullscreen = false;
-bool isPaused = false;
-bool haveDimensionsChanged = false;
+bool isRunning = true;
 
 void initSDL() {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD);
@@ -43,6 +42,10 @@ void initOpenGL() {
 	gladLoadGL(SDL_GL_GetProcAddress);
 	SDL_GL_MakeCurrent(window, gl_context);
 	SDL_GL_SetSwapInterval(1); 
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
 	
 	glGenTextures(1, &gameTexture);
 	glBindTexture(GL_TEXTURE_2D, gameTexture);
@@ -50,8 +53,9 @@ void initOpenGL() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight,0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight,0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
 
+	
 }
 
 void initImGui() {
@@ -64,7 +68,7 @@ void initImGui() {
 	io.IniFilename = nullptr;
 	
 	ImGui_ImplSDL3_InitForOpenGL(window, gl_context);
-	ImGui_ImplOpenGL3_Init("#version 130");
+	ImGui_ImplOpenGL3_Init("#version 330");
 }
 
 void initAudio() {
@@ -104,8 +108,8 @@ bool drawMenuBar(bool input) {
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Emulation")) {
-			if (ImGui::MenuItem("Pause", nullptr, isPaused)) {
-				isPaused = !isPaused;
+			if (ImGui::MenuItem("Pause", nullptr, !isRunning)) {
+				isRunning = !isRunning;
 			}
 			ImGui::EndMenu();
 		}
@@ -154,12 +158,7 @@ namespace render {
 			updateInput();
 		}
 		
-		if(haveDimensionsChanged) {
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight,0, GL_BGRA, GL_UNSIGNED_BYTE, frameBuffer);
-		} else {
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, screenWidth, screenHeight, GL_BGRA, GL_UNSIGNED_BYTE, frameBuffer);
-		}
-		haveDimensionsChanged = false;
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, screenWidth, screenHeight, GL_BGRA, GL_UNSIGNED_BYTE, frameBuffer);
 		int w, h;
 		SDL_GetWindowSize(window, &w, &h);
 		ImGui_ImplOpenGL3_NewFrame();

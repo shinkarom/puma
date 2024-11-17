@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 	
 	bool shouldContinue;
 	do {
-		if(!isPaused) {
+		if(isRunning) {
 			// input::beforeFrame();
 		
 			ppu::beforeFrame();

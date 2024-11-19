@@ -13,10 +13,21 @@ tsf* sf;
 
 namespace apu {
 		
+	void setupChannels() {
+		for(int i = 0; i<numApuChannels; i++) {
+			tsf_channel_set_presetindex(sf, i, 0);
+			tsf_channel_set_pan(sf, i, 0.5);
+			tsf_channel_set_volume(sf, i, 1.0);
+			tsf_channel_set_pitchwheel(sf, i, 8192);
+			tsf_channel_set_pitchrange(sf, i, 2.0);
+			tsf_channel_set_tuning(sf, i, 0.0);
+		}
+	}	
+		
 	void init() {
 		memset(audioBuffer, 0, samplesPerFrame*2*2);
 		auto exePath = std::filesystem::path(PathFind::FindExecutable()).parent_path();
-		auto sf2name = exePath / "CHAOS8M.SF2";
+		auto sf2name = exePath / "EMU.SF2";
 		sf = tsf_load_filename(sf2name.string().c_str());
 		if(sf == nullptr) {
 			std::cout<<"Could not load soundfont"<<std::endl;
@@ -24,6 +35,7 @@ namespace apu {
 			tsf_set_output(sf, TSF_STEREO_INTERLEAVED, audioSampleRate);
 			tsf_set_max_voices(sf, 64);
 		}
+		setupChannels();
 	}
 	
 	void deinit() {
@@ -46,12 +58,31 @@ namespace apu {
 		//std::cout<<"Audio register "<<std::hex<<reg<<" with "<<value<<std::dec<<std::endl;
 	}
 	
-	void noteOn(int presetNum, int keyNum, int vel) {
-		tsf_note_on(sf, presetNum, keyNum, vel/127);
+	void noteOn(int channelNum, int keyNum, int vel) {
+		if(channelNum <0 || channelNum >= numApuChannels) {
+			return;
+		}
+		tsf_channel_note_on(sf, channelNum, keyNum, vel/127);
 	}
 	
-	void noteOff(int presetNum, int keyNum) {
-		tsf_note_off(sf, presetNum, keyNum);
+	void noteOff(int channelNum, int keyNum) {
+		if(channelNum <0 || channelNum >= numApuChannels) {
+			return;
+		}
+		tsf_channel_note_off(sf, channelNum, keyNum);
+	}
+	void allNotesOff(int channelNum) {
+		if(channelNum <0 || channelNum >= numApuChannels) {
+			return;
+		}
+		tsf_channel_note_off_all(sf, channelNum);
+	}
+	
+	void allSoundsOff(int channelNum) {
+		if(channelNum <0 || channelNum >= numApuChannels) {
+			return;
+		}
+		tsf_channel_sounds_off_all(sf, channelNum);
 	}
 	
 }

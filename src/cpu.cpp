@@ -91,6 +91,7 @@ enum {
 	API_printStack,
 	API_note_on,
 	API_note_off,
+	API_allNotesOff,
 };
 
 void syscall_handler(int value) {
@@ -288,14 +289,19 @@ void syscall_handler(int value) {
 		case API_note_on: {
 			int vel = bus::pop8();
 			int keyNum = bus::pop8();
-			int presetNum = bus::pop16();
-			apu::noteOn(presetNum, keyNum, vel);
+			int channelNum = bus::pop8();
+			apu::noteOn(channelNum, keyNum, vel);
 			break;
 		}
 		case API_note_off: {
 			int keyNum = bus::pop8();
-			int presetNum = bus::pop16();
-			apu::noteOff(presetNum, keyNum);
+			int channelNum = bus::pop8();
+			apu::noteOff(channelNum, keyNum);
+			break;	
+		}
+		case API_allNotesOff: {
+			int channelNum = bus::pop8();
+			apu::allNotesOff(channelNum);
 			break;
 		}
 		default:

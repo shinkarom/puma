@@ -9,6 +9,8 @@ namespace apu {
 	void afterFrame();
 	int16_t* callback();
 	void writeReg(int reg, int value);
-	void noteOn(int presetNum, int keyNum, int vel);
-	void noteOff(int presetNum, int keyNum);
+	void noteOn(int channelNum, int keyNum, int vel);
+	void noteOff(int channelNum, int keyNum);
+	void allNotesOff(int channelNum);
+	void allSoundsOff(int channelNum);
 }

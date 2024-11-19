@@ -24,10 +24,7 @@ namespace ppu {
 		if(x < 0 || x > screenWidth || y<0 || y > screenHeight || ((color&0xFF000000) == 0x00000000)) {
 			return;
 		}
-		auto dstColor = frame_buf[y*screenWidth+x];
-		//auto outColor = color;
-		auto outColor = color::blendARGB(color, dstColor);
-		frame_buf[y*screenWidth+x] = outColor;
+		frame_buf[y*screenWidth+x] = color;
 		//std::cout<<"Set pixel at "<<x<<" "<<y<<" with "<<std::hex<<color<<std::dec<<std::endl;
 	}
 	

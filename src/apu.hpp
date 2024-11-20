@@ -13,4 +13,7 @@ namespace apu {
 	void noteOff(int channelNum, int keyNum);
 	void allNotesOff(int channelNum);
 	void allSoundsOff(int channelNum);
+	void setGlobalVolume(int value);
+	void setChannelVolume(int channelNum, int value);
+	void setChannelPan(int channelNum, int value);
 }

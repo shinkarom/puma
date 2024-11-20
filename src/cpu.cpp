@@ -92,6 +92,10 @@ enum {
 	API_note_on,
 	API_note_off,
 	API_allNotesOff,
+	API_allSoundsOff,
+	API_setGlobalVolume,
+	API_setChannelVolume,
+	API_setChannelPan,
 };
 
 void syscall_handler(int value) {
@@ -302,6 +306,28 @@ void syscall_handler(int value) {
 		case API_allNotesOff: {
 			int channelNum = bus::pop8();
 			apu::allNotesOff(channelNum);
+			break;
+		}
+		case API_allSoundsOff: {
+			int channelNum = bus::pop8();
+			apu::allSoundsOff(channelNum);
+			break;
+		}
+		case API_setGlobalVolume: {
+			int value = bus::pop8();
+			apu::setGlobalVolume(value);
+			break;
+		}
+		case API_setChannelVolume: {
+			int value = bus::pop8();
+			int channelNum = bus::pop8();
+			apu::setChannelVolume(channelNum, value);
+			break;
+		}
+		case API_setChannelPan: {
+			int value = bus::pop8();
+			int channelNum = bus::pop8();
+			apu::setChannelPan(channelNum, value);
 			break;
 		}
 		default:

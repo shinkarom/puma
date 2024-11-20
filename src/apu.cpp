@@ -18,9 +18,6 @@ namespace apu {
 			tsf_channel_set_presetindex(sf, i, 0);
 			tsf_channel_set_pan(sf, i, 0.5);
 			tsf_channel_set_volume(sf, i, 1.0);
-			tsf_channel_set_pitchwheel(sf, i, 8192);
-			tsf_channel_set_pitchrange(sf, i, 2.0);
-			tsf_channel_set_tuning(sf, i, 0.0);
 		}
 	}	
 		
@@ -36,6 +33,10 @@ namespace apu {
 			tsf_set_max_voices(sf, 256);
 		}
 		setupChannels();
+		//for(int i = 0; i<tsf_get_presetcount(sf);i++) {
+		//	const char* presetname = tsf_get_presetname(sf, i);
+		//	std::cout<<i<<" "<<presetname<<std::endl;
+		//}
 	}
 	
 	void deinit() {
@@ -104,6 +105,14 @@ namespace apu {
 			return;
 		}
 		tsf_set_volume(sf, value/127.0);
+	}
+	
+	void setChannelPreset(int channelNum, int value) {
+		if(channelNum <0 || channelNum >= numApuChannels) {
+			return;
+		}
+		tsf_channel_set_presetindex(sf, channelNum, value);
+		std::cout<<"set "<<channelNum<<" to "<<value<<std::endl;
 	}
 	
 }

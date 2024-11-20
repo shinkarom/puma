@@ -16,4 +16,5 @@ namespace apu {
 	void setGlobalVolume(int value);
 	void setChannelVolume(int channelNum, int value);
 	void setChannelPan(int channelNum, int value);
+	void setChannelPreset(int channelNum, int value);
 }

@@ -96,6 +96,7 @@ enum {
 	API_setGlobalVolume,
 	API_setChannelVolume,
 	API_setChannelPan,
+	API_setChannelPreset,
 };
 
 void syscall_handler(int value) {
@@ -328,6 +329,12 @@ void syscall_handler(int value) {
 			int value = bus::pop8();
 			int channelNum = bus::pop8();
 			apu::setChannelPan(channelNum, value);
+			break;
+		}
+		case API_setChannelPreset: {
+			int value = bus::pop16();
+			int channelNum = bus::pop8();
+			apu::setChannelPreset(channelNum, value);
 			break;
 		}
 		default:

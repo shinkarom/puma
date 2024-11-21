@@ -73,15 +73,12 @@ enum {
 	API_isJustPressed,
 	API_isJustReleased,
 	API_set1bitPalette,
-	API_set2bitPalette,
 	API_cls,
 	API_setPixel,
 	API_drawSprite,
 	API_drawLine,
 	API_drawCircle,
 	API_drawCircleOutline,
-	API_drawEllipse,
-	API_drawEllipseOutline,
 	API_drawRectangle, 
 	API_drawRectangleOutline,
 	API_drawTriangle,
@@ -89,8 +86,8 @@ enum {
 	API_drawText,
 	API_getRandomNumber,
 	API_printStack,
-	API_note_on,
-	API_note_off,
+	API_noteOn,
+	API_noteOff,
 	API_allNotesOff,
 	API_allSoundsOff,
 	API_setGlobalVolume,
@@ -165,12 +162,6 @@ void syscall_handler(int value) {
 			ppu::set1bitPalette(color);
 			break;
 		}
-		case API_set2bitPalette: {
-			auto color2 = popColor();
-			auto color1 = popColor();
-			ppu::set2bitPalette(color1, color2);
-			break;
-		}
 		case API_drawLine: {
 			auto color = popColor();
 			auto y2 = bus::pop16();
@@ -194,24 +185,6 @@ void syscall_handler(int value) {
 			auto y0 = bus::pop16();
 			auto x0 = bus::pop16();
 			ppu::drawCircleOutline(x0, y0, radius, color);
-			break;
-		}
-		case API_drawEllipse: {
-			auto color = popColor();
-			auto b = bus::pop16();
-			auto a = bus::pop16();
-			auto y0 = bus::pop16();
-			auto x0 = bus::pop16();
-			ppu::drawEllipseFilled(x0, y0, a, b, color);
-			break;
-		}
-		case API_drawEllipseOutline: {
-			auto color = popColor();
-			auto b = bus::pop16();
-			auto a = bus::pop16();
-			auto y0 = bus::pop16();
-			auto x0 = bus::pop16();
-			ppu::drawEllipseOutline(x0, y0, a, b, color);
 			break;
 		}
 		case API_drawRectangle: {
@@ -291,14 +264,14 @@ void syscall_handler(int value) {
 			std::cout<<"sp="<<t<<" "<<std::dec<<"---"<<std::endl;
 			break;
 		}
-		case API_note_on: {
+		case API_noteOn: {
 			int vel = bus::pop8();
 			int keyNum = bus::pop8();
 			int channelNum = bus::pop8();
 			apu::noteOn(channelNum, keyNum, vel);
 			break;
 		}
-		case API_note_off: {
+		case API_noteOff: {
 			int keyNum = bus::pop8();
 			int channelNum = bus::pop8();
 			apu::noteOff(channelNum, keyNum);

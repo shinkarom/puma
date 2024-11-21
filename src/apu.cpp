@@ -112,7 +112,6 @@ namespace apu {
 			return;
 		}
 		tsf_channel_set_presetindex(sf, channelNum, value);
-		std::cout<<"set "<<channelNum<<" to "<<value<<std::endl;
 	}
 	
 }

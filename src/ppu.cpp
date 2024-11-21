@@ -16,7 +16,6 @@ namespace ppu {
 	static uint32_t *frame_buf;
 	
 	uint32_t palette1bit[2] = {transparentColor, 0xFFFFFFFF};
-	uint32_t palette2bit[4] = {transparentColor, transparentColor, 0xFF000000, 0xFFFFFFFF};
 	
 	int bitOffset;
 	
@@ -140,11 +139,6 @@ namespace ppu {
 		palette1bit[1] = color;
 	}
 	
-	void set2bitPalette(uint32_t color1, uint32_t color2) {
-		palette2bit[2] = color1;
-		palette2bit[3] = color2;
-	}
-	
 	void drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color) {
 		int dx = std::abs(x2 - x1);
 		int dy = std::abs(y2 - y1);
@@ -223,67 +217,6 @@ namespace ppu {
 			}
 		}
 	}
-
-	void drawEllipseOutline(uint16_t x0, uint16_t y0, uint16_t a, uint16_t b, uint32_t color) {
-		if(a == b){
-			drawCircleOutline(x0, y0, a, color);
-			return;
-		}
-		
-		int x = a;
-		int y = 0;
-		int dx = (1 - 2 * a) * b * b;
-		int dy = a * a;
-		int err = dx + dy;
-
-		while (x >= 0) {
-			setFullPixel(x0 + x, y0 - y, color);
-			setFullPixel(x0 + x, y0 + y, color);
-			setFullPixel(x0 - x, y0 - y, color);
-			setFullPixel(x0 - x, y0 + y, color);
-
-			int e2 = 2 * err;
-			if (e2 >= dx) {
-				x--;
-				err += dx += 2 * b * b;
-			}
-			if (e2 <= dy) {
-				y++;
-				err += dy += 2 * a * a;
-			}
-		}
-	}
-
-	void drawEllipseFilled(uint16_t x0, uint16_t y0, uint16_t a, uint16_t b, uint32_t color) {
-		if(a == b){
-			drawCircleFilled(x0, y0, a, color);
-			return;
-		}
-		
-		int x = a;
-		int y = 0;
-		int dx = (1 - 2 * a) * b * b;
-		int dy = a * a;
-		int err = dx + dy;
-
-		while (x >= 0) {
-			for(int i = x0-x; i<=x0+x; i++) {
-				setFullPixel(i, y0 - y, color);
-				setFullPixel(i, y0 + y, color);
-			}
-
-			int e2 = 2 * err;
-			if (e2 >= dx) {
-				x--;
-				err += dx += 2 * b * b;
-			}
-			if (e2 <= dy) {
-				y++;
-				err += dy += 2 * a * a;
-			}
-		}
-	}
-
 
 	void drawRectangleOutline(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color) {
 		//std::cout<<"Will draw rectangle outline"<<std::endl;

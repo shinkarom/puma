@@ -20,7 +20,6 @@ constexpr auto maxFileSize = totalMemory - 0x200 - systemMemorySize;
 constexpr auto codeOffset = 0x200;
 constexpr auto stackOffset = totalMemory;
 
-constexpr auto numApuRegisters = 0x106;
 constexpr auto numApuChannels = 24;
 
 constexpr auto syscallStackAddress = 0xFFFFFFF9;

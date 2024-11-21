@@ -10,6 +10,7 @@
  
 int16_t audioBuffer[samplesPerFrame*2];
 tsf* sf;
+bool hasAudio = false;
 
 namespace apu {
 		
@@ -22,6 +23,7 @@ namespace apu {
 	}	
 		
 	void init() {
+		hasAudio = false;
 		memset(audioBuffer, 0, samplesPerFrame*2*2);
 		auto exePath = std::filesystem::path(PathFind::FindExecutable()).parent_path();
 		auto sf2name = exePath / "CHAOS8M.SF2";
@@ -29,18 +31,25 @@ namespace apu {
 		if(sf == nullptr) {
 			std::cout<<"Could not load soundfont"<<std::endl;
 		} else {
+			hasAudio = true;
+		}
+		if(hasAudio) {
+			hasAudio = true;
 			tsf_set_output(sf, TSF_STEREO_INTERLEAVED, audioSampleRate);
 			tsf_set_max_voices(sf, 256);
+			setupChannels();
+			//for(int i = 0; i<tsf_get_presetcount(sf);i++) {
+			//	const char* presetname = tsf_get_presetname(sf, i);
+			//	std::cout<<i<<" "<<presetname<<std::endl;
+			//}
 		}
-		setupChannels();
-		//for(int i = 0; i<tsf_get_presetcount(sf);i++) {
-		//	const char* presetname = tsf_get_presetname(sf, i);
-		//	std::cout<<i<<" "<<presetname<<std::endl;
-		//}
+		
 	}
 	
 	void deinit() {
-		tsf_close(sf);
+		if(hasAudio){
+			tsf_close(sf);
+		}
 	}
 	
 	void afterFrame() {
@@ -48,7 +57,9 @@ namespace apu {
 	}
 	
 	int16_t* callback() {
-		tsf_render_short(sf, audioBuffer, samplesPerFrame);
+		if(hasAudio) {
+			tsf_render_short(sf, audioBuffer, samplesPerFrame);
+		}
 		return audioBuffer;
 	}
 	
@@ -60,55 +71,55 @@ namespace apu {
 	}
 	
 	void noteOn(int channelNum, int keyNum, int vel) {
-		if(channelNum < 0 || channelNum >= numApuChannels) {
+		if(!hasAudio || channelNum < 0 || channelNum >= numApuChannels) {
 			return;
 		}
 		tsf_channel_note_on(sf, channelNum, keyNum, vel/127.0);
 	}
 	
 	void noteOff(int channelNum, int keyNum) {
-		if(channelNum < 0 || channelNum >= numApuChannels) {
+		if(!hasAudio || channelNum < 0 || channelNum >= numApuChannels) {
 			return;
 		}
 		tsf_channel_note_off(sf, channelNum, keyNum);
 	}
 	void allNotesOff(int channelNum) {
-		if(channelNum <0 || channelNum >= numApuChannels) {
+		if(!hasAudio || channelNum <0 || channelNum >= numApuChannels) {
 			return;
 		}
 		tsf_channel_note_off_all(sf, channelNum);
 	}
 	
 	void allSoundsOff(int channelNum) {
-		if(channelNum < 0 || channelNum >= numApuChannels) {
+		if(!hasAudio || channelNum < 0 || channelNum >= numApuChannels) {
 			return;
 		}
 		tsf_channel_sounds_off_all(sf, channelNum);
 	}
 	
 	void setChannelVolume(int channelNum, int value) {
-		if(channelNum <0 || channelNum >= numApuChannels) {
+		if(!hasAudio || channelNum <0 || channelNum >= numApuChannels) {
 			return;
 		}
 		tsf_channel_set_volume(sf, channelNum, value/127.0);
 	}
 	
 	void setChannelPan(int channelNum, int value) {
-		if(channelNum <0 || channelNum >= numApuChannels) {
+		if(!hasAudio || channelNum <0 || channelNum >= numApuChannels) {
 			return;
 		}
 		tsf_channel_set_pan(sf, channelNum, value/255.0);
 	}
 	
 	void setGlobalVolume(int value) {
-		if(value < 0 || value > 127) {
+		if(!hasAudio || value < 0 || value > 127) {
 			return;
 		}
 		tsf_set_volume(sf, value/127.0);
 	}
 	
 	void setChannelPreset(int channelNum, int value) {
-		if(channelNum <0 || channelNum >= numApuChannels) {
+		if(!hasAudio || channelNum <0 || channelNum >= numApuChannels) {
 			return;
 		}
 		tsf_channel_set_presetindex(sf, channelNum, value);

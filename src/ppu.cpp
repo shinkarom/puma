@@ -29,8 +29,7 @@ namespace ppu {
 	
 	void init() {
 		 frame_buf = new uint32_t[screenTotalPixels];
-		 memset(frame_buf,0,screenTotalPixels*sizeof(uint32_t));
-		 
+		 memset(frame_buf,0,screenTotalPixels*sizeof(uint32_t));	 
 	}
 	
 	void deinit() {

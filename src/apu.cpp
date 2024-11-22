@@ -34,16 +34,24 @@ namespace apu {
 			hasAudio = true;
 		}
 		if(hasAudio) {
-			hasAudio = true;
 			tsf_set_output(sf, TSF_STEREO_INTERLEAVED, audioSampleRate);
 			tsf_set_max_voices(sf, 256);
-			setupChannels();
 			//for(int i = 0; i<tsf_get_presetcount(sf);i++) {
 			//	const char* presetname = tsf_get_presetname(sf, i);
 			//	std::cout<<i<<" "<<presetname<<std::endl;
 			//}
 		}
 		
+	}
+	
+	void reset() {
+		if(hasAudio) {
+			setupChannels();
+			//for(int i = 0; i<tsf_get_presetcount(sf);i++) {
+			//	const char* presetname = tsf_get_presetname(sf, i);
+			//	std::cout<<i<<" "<<presetname<<std::endl;
+			//}
+		}
 	}
 	
 	void deinit() {

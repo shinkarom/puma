@@ -28,16 +28,15 @@ namespace ppu {
 	}
 	
 	void init() {
-		 frame_buf = new uint32_t[screenTotalPixels];
-		 memset(frame_buf,0,screenTotalPixels*sizeof(uint32_t));	 
+		 frame_buf = new uint32_t[screenTotalPixels]; 
 	}
 	
 	void deinit() {
 		delete[] frame_buf;
 	}
 	
-	void afterLoad() {
-
+	void reset() {
+		memset(frame_buf,0,screenTotalPixels*sizeof(uint32_t));
 	}
 	
 	void beforeFrame() {
@@ -55,18 +54,6 @@ namespace ppu {
 		}	
 		*/
 		drawRectangleFilled(0, 0, screenWidth-1, screenHeight-1, color);
-	}
-	
-	void setPixel(int x, int y, uint16_t color) {
-		setFullPixel(x, y, color);
-		//std::cout<<"Set pixel at "<<x<<" "<<y<<" with "<<color<<std::endl;
-	}
-	
-	uint16_t getPixel(int x, int y) {
-		if(x > screenWidth || y > screenHeight) {
-			return 0;
-		}
-		return frame_buf[y*screenWidth+x];
 	}
 	
 	void drawSprite(uint32_t address, int x, int y, int w, int h, uint16_t options) {

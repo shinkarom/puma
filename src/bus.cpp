@@ -3,10 +3,14 @@
 
 #include <fstream>
 #include <iostream>
+#include <vector>
+#include <algorithm>
 
 namespace bus {
 	
-	uint8_t memory[totalMemory];
+	//uint8_t memory[totalMemory];
+	std::vector<uint8_t> memory(totalMemory,0);
+	std::vector<uint8_t> originalFile(maxFileSize, 0);
 	
 	constexpr auto syscallStackSize = 1024;
 	int syscallStackTop = 0;
@@ -109,11 +113,16 @@ namespace bus {
 		if(fileSize > maxFileSize) {
 			return false;
 		}
-		
-		file.read((char*)(memory+codeOffset), fileSize);
+		originalFile.resize(fileSize);
+		file.read(reinterpret_cast<char*>(&originalFile[0]), fileSize);
 		
 		std::cout<<"Read file of size "<<fileSize<<std::endl;
 		
 		return true;
+	}
+	
+	void reset() {
+		std::fill(memory.begin(), memory.end(), 0);
+		std::copy(originalFile.begin(), originalFile.end(), memory.begin()+codeOffset);
 	}
 }

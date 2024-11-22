@@ -18,4 +18,5 @@ namespace bus {
 	uint32_t pop32();
 	
 	bool load(char* fileName);
+	void reset();
 }

@@ -1,4 +1,5 @@
 #include <print>
+#include <string>
 
 #include "common.hpp"
 #include "render.hpp"
@@ -8,12 +9,26 @@
 #include "input.hpp"
 #include "color.hpp"
 #include "cpu.hpp"
+#include "args.hxx"
 
 int main(int argc, char *argv[])
 {
-	if(argc == 1) {
+	args::ArgumentParser parser("Puma");
+	args::Positional<std::string> filename(parser, "filename", "The file to run Puma with");
+	
+	try {
+		parser.ParseCLI(argc, argv);
+	} catch (args::Help&) {
+		std::cout<<parser;
+	} catch (args::ParseError& e) {
+		std::cerr<<e.what()<<std::endl;
+		std::cerr<<parser;
+		return 1;
+	}
+	
+	if(!filename) {
 		std::println("No input file provided.");
-		return 0;
+		return 1;
 	}
 	
 	input::init();
@@ -21,14 +36,17 @@ int main(int argc, char *argv[])
     color::init();
     ppu::init();
     cpu::init();
+	render::init();
 	
 	if(!bus::load(argv[1])) {
 		std::println("File couldn't be loaded.");
 		return 0;
 	}
-	cpu::onLoad();
-	ppu::afterLoad();
-	render::init();
+	bus::reset();
+	cpu::reset();
+	ppu::reset();
+	apu::reset();
+	
 	
 	bool shouldContinue;
 	do {

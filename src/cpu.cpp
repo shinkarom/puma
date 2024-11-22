@@ -389,7 +389,7 @@ namespace cpu {
 		m68k_set_irq(2);
 	}
 	
-	void onLoad() {
+	void reset() {
 		bus::write32(0, stackOffset);
 		bus::write32(0x4, codeOffset);
 		m68k_pulse_reset();

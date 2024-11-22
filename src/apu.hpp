@@ -5,6 +5,7 @@
 
 namespace apu {
 	void init();
+	void reset();
 	void deinit();
 	void afterFrame();
 	int16_t* callback();

@@ -26,11 +26,6 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	
-	if(!filename) {
-		std::println("No input file provided.");
-		return 1;
-	}
-	
 	input::init();
     apu::init();
     color::init();
@@ -38,11 +33,17 @@ int main(int argc, char *argv[])
     cpu::init();
 	render::init();
 	
-	if(!bus::load(argv[1])) {
-		std::println("File couldn't be loaded.");
-		return 0;
-	}
-	render::reset();	
+	if(filename) {
+		auto st = args::get(filename);
+		/*
+		if(!bus::load(st.c_str())) {
+			std::println("File couldn't be loaded.");
+		} else {
+			render::reset();
+		}
+		*/
+		render::tryLoadFile(st);
+	} 	
 	
 	bool shouldContinue;
 	do {

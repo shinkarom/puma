@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <string>
 
 namespace render {
 	void init();
@@ -8,4 +9,5 @@ namespace render {
 	void renderAudio(int16_t* audioBuffer);
 	void updateInput();
 	void deinit();
+	bool tryLoadFile(std::string fileName);
 }

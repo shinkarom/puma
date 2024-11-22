@@ -34,7 +34,7 @@ add_executable(${PROJ_NAME}
 	vendor/imgui/backends/imgui_impl_sdl3.cpp
 	vendor/imgui/backends/imgui_impl_opengl3.cpp
 	vendor/imgui/misc/cpp/imgui_stdlib.cpp
-	src/ImGuiFileDialog.h
+	src/ImGuiFileDialog.cpp
 	src/gl.c
 	src/tsf.c
 	src/pathfind.cpp

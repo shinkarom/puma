@@ -32,6 +32,7 @@ bool isFullscreen = false;
 
 bool isFileLoaded = false;
 bool isRunning = true;
+bool wasRunning = false;
 
 void initSDL() {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD);
@@ -100,9 +101,14 @@ bool drawMenuBar(bool input) {
 	bool result = input;
 	if (!isFullscreen &&ImGui::BeginMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
-			//if (ImGui::MenuItem("Open")) {
+			if (ImGui::MenuItem("Open")) {
+				wasRunning = isRunning;
+				isRunning = false;
+				IGFD::FileDialogConfig config;
+				config.path = "";
+				ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Open File", ".puma", config);
 				// Open file action
-			//}
+			}
 			if (ImGui::MenuItem("Exit")) {
 				result = false;
 			}
@@ -128,6 +134,23 @@ bool drawMenuBar(bool input) {
 		}
 		ImGui::EndMenuBar();
 	}
+	
+	// display
+	  if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {
+		  bool success = false;
+		if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
+		  std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+		  std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+		  success = render::tryLoadFile(filePathName);
+		}
+		
+		// close
+		ImGuiFileDialog::Instance()->Close();
+		if(!success) {
+			isRunning = wasRunning;
+		}
+	  }
+	
 	return result;
 }
 
@@ -141,11 +164,24 @@ namespace render {
 	}
 	
 	void reset() {
+		if(!isFileLoaded) {
+			return;
+		}
 		bus::reset();
 		cpu::reset();
 		ppu::reset();
 		apu::reset();	
 		isRunning = true;
+	}
+	
+	bool tryLoadFile(std::string fileName) {
+		if(!bus::load(fileName.c_str())) {
+			std::cout<<"File couldn't be loaded."<<std::endl;
+			return false;
+		} else {
+			reset();
+			return true;
+		}
 	}
 	
 	void updateInput() {
@@ -223,9 +259,11 @@ namespace render {
 		ImGui::EndChild();
 		
 		if(!isFullscreen) {
+			auto status = isFileLoaded ? (isRunning ? "Running" : "Paused") : "No file loaded";
+			
 			ImGui::SetCursorPosY(ImGui::GetWindowHeight() - statusBarHeight);
 			ImGui::BeginChild("StatusBar", ImVec2(availableSize.x, statusBarHeight), false);
-			ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);  // Example status bar text
+			ImGui::Text("FPS: %.1f | %s", ImGui::GetIO().Framerate, status);  // Example status bar text
 			ImGui::EndChild();
 		}
 		

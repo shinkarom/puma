@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 namespace bus {
 	void write8(uint32_t address, uint8_t value);
@@ -17,6 +18,6 @@ namespace bus {
 	uint16_t pop16();
 	uint32_t pop32();
 	
-	bool load(char* fileName);
+	bool load(std::string fileName);
 	void reset();
 }

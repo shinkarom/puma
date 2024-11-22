@@ -101,7 +101,7 @@ namespace bus {
 		}
 	}
 	
-	bool load(char* fileName) {
+	bool load(std::string fileName) {
 		std::ifstream file(fileName, std::ios::binary);
 		if(!file.is_open()){
 			return false;

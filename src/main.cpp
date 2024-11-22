@@ -42,15 +42,11 @@ int main(int argc, char *argv[])
 		std::println("File couldn't be loaded.");
 		return 0;
 	}
-	bus::reset();
-	cpu::reset();
-	ppu::reset();
-	apu::reset();
-	
+	render::reset();	
 	
 	bool shouldContinue;
 	do {
-		if(isRunning) {
+		if(isFileLoaded && isRunning) {
 			// input::beforeFrame();
 		
 			ppu::beforeFrame();

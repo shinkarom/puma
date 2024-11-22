@@ -46,6 +46,7 @@ namespace apu {
 	
 	void reset() {
 		if(hasAudio) {
+			tsf_reset(sf);
 			setupChannels();
 			//for(int i = 0; i<tsf_get_presetcount(sf);i++) {
 			//	const char* presetname = tsf_get_presetname(sf, i);

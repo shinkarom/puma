@@ -115,6 +115,7 @@ namespace bus {
 		}
 		originalFile.resize(fileSize);
 		file.read(reinterpret_cast<char*>(&originalFile[0]), fileSize);
+		isFileLoaded = true;
 		
 		std::cout<<"Read file of size "<<fileSize<<std::endl;
 		

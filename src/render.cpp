@@ -10,6 +10,10 @@
 
 #include "common.hpp"
 #include "input.hpp"
+#include "cpu.hpp"
+#include "bus.hpp"
+#include "ppu.hpp"
+#include "apu.hpp"
 
 constexpr int msPerFrame = 1000 / framesPerSecond;
 constexpr SDL_AudioSpec spec = {.format = SDL_AUDIO_S16LE, .channels=2, .freq=audioSampleRate};
@@ -25,6 +29,8 @@ SDL_AudioDeviceID audioID;
 uint64_t lastTime = 0;
 uint64_t nextTime = lastTime+msPerFrame;
 bool isFullscreen = false;
+
+bool isFileLoaded = false;
 bool isRunning = true;
 
 void initSDL() {
@@ -109,8 +115,14 @@ bool drawMenuBar(bool input) {
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Emulation")) {
-			if (ImGui::MenuItem("Pause", nullptr, !isRunning)) {
+			if (ImGui::MenuItem("Pause", nullptr, isFileLoaded && !isRunning)) {
 				isRunning = !isRunning;
+			}
+			if (ImGui::MenuItem("Reset", nullptr, false)) {
+				if(isFileLoaded) {
+					render::reset();
+				}
+				
 			}
 			ImGui::EndMenu();
 		}
@@ -126,6 +138,14 @@ namespace render {
 		initOpenGL();
 		initImGui();
 		initAudio();	
+	}
+	
+	void reset() {
+		bus::reset();
+		cpu::reset();
+		ppu::reset();
+		apu::reset();	
+		isRunning = true;
 	}
 	
 	void updateInput() {
@@ -152,6 +172,10 @@ namespace render {
 					(isFullscreen && event.key.scancode == SDL_SCANCODE_ESCAPE)) {
                     // Toggle between fullscreen and windowed
                     isFullscreen = !isFullscreen;
+                }
+				if (event.key.scancode == SDL_SCANCODE_F11) {
+                    // Toggle between fullscreen and windowed
+                    isRunning = !isRunning;
                 }
 			}
 		}

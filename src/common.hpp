@@ -28,3 +28,4 @@ constexpr auto syscallAddress = 0xFFFFFFFC;
 constexpr auto transparentColor = 0x00000000;
 
 extern bool isRunning;
+extern bool isFileLoaded;

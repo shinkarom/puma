@@ -20,7 +20,7 @@ namespace ppu {
 	int bitOffset;
 	
 	void inline setFullPixel(int x, int y, uint32_t color) {
-		if(x < 0 || x > screenWidth || y<0 || y > screenHeight || ((color&0xFF000000) == 0x00000000)) {
+		if(x < 0 || x >= screenWidth || y<0 || y >= screenHeight || ((color&0xFF000000) == 0x00000000)) {
 			return;
 		}
 		frame_buf[y*screenWidth+x] = color;
@@ -127,6 +127,7 @@ namespace ppu {
 	}
 	
 	void drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color) {
+		//std::cout<<"Draw line from "<<x1<<" "<<y1<<" to "<<x2<<" "<<y2<<" with "<<std::hex<<color<<std::dec<<std::endl;
 		int dx = std::abs(x2 - x1);
 		int dy = std::abs(y2 - y1);
 		int sx = (x1 < x2) ? 1 : -1;
@@ -151,7 +152,6 @@ namespace ppu {
 				y1 += sy;
 			}
 		}
-		//std::cout<<"Drew line from "<<x1<<" "<<y1<<" to "<<x2<<" "<<y2<<" with "<<std::hex<<color<<std::dec<<std::endl;
 	}
 	
 	void drawCircleOutline(uint16_t x0, uint16_t y0, uint16_t radius, uint32_t color) {

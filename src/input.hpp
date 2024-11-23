@@ -16,4 +16,6 @@ namespace input {
 	
 	void init();
 	void beforeFrame();
+	
+	void updateInput(int inputNum, bool value);
 }

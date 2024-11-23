@@ -43,4 +43,14 @@ namespace input {
 		
 	}
 	
+	void updateInput(int inputNum, bool value) {
+		if(inputNum < 0 || inputNum >= numInputs) {
+			return;
+		}
+		previouslyPressedInputs[inputNum] = pressedInputs[inputNum];
+		pressedInputs[inputNum] = value;
+		justPressedInputs[inputNum] = (! previouslyPressedInputs[inputNum]) && pressedInputs[inputNum];
+		justReleasedInputs[inputNum] = previouslyPressedInputs[inputNum] & (! pressedInputs[inputNum]);
+	}
+	
 }

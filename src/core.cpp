@@ -1,5 +1,7 @@
 #include "core.hpp"
 
+#include <iostream>
+
 #include "common.hpp"
 #include "cpu.hpp"
 #include "bus.hpp"
@@ -38,8 +40,8 @@ namespace core {
 			
 			cpu::frame();
 			ppu::afterFrame();
-			 apu::afterFrame();
-			 apu::frame();
+			apu::afterFrame();
+			apu::frame();
 			return true;
 		}
 		return false;
@@ -58,6 +60,10 @@ namespace core {
 			core::reset();
 			return true;
 		}
+	}
+	
+	void updateInput(int inputNum, bool value) {
+		input::updateInput(inputNum, value);
 	}
 	
 }

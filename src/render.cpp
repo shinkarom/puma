@@ -9,7 +9,6 @@
 #include "ImGuiFileDialog.h"
 
 #include "common.hpp"
-#include "input.hpp"
 #include "core.hpp"
 
 constexpr int msPerFrame = 1000 / framesPerSecond;
@@ -170,10 +169,7 @@ namespace render {
 	void updateInput() {
 		auto kbState = SDL_GetKeyboardState(nullptr);
 		for (int i = 0; i < numInputs; i++) {
-			input::previouslyPressedInputs[i] = input::pressedInputs[i];
-			input::pressedInputs[i] = kbState[inputMapping[i]];
-			input::justPressedInputs[i] = (! input::previouslyPressedInputs[i]) && input::pressedInputs[i];
-			input::justReleasedInputs[i] = input::previouslyPressedInputs[i] & (! input::pressedInputs[i]);
+			core::updateInput(i, kbState[inputMapping[i]]);
 		}
 	}
 	

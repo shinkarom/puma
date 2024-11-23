@@ -3,13 +3,8 @@
 
 #include "common.hpp"
 #include "render.hpp"
-#include "bus.hpp"
-#include "ppu.hpp"
-#include "apu.hpp"
-#include "input.hpp"
-#include "color.hpp"
-#include "cpu.hpp"
 #include "args.hxx"
+#include "core.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -26,46 +21,23 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	
-	input::init();
-    apu::init();
-    color::init();
-    ppu::init();
-    cpu::init();
+	core::init();
 	render::init();
 	
 	if(filename) {
 		auto st = args::get(filename);
-		/*
-		if(!bus::load(st.c_str())) {
-			std::println("File couldn't be loaded.");
-		} else {
-			render::reset();
-		}
-		*/
 		render::tryLoadFile(st);
 	} 	
 	
 	bool shouldContinue;
 	do {
-		if(isFileLoaded && isRunning) {
-			// input::beforeFrame();
-		
-			ppu::beforeFrame();
-			
-			cpu::frame();
-			ppu::afterFrame();
-			 apu::afterFrame();
-			int16_t* audioBuffer = apu::callback();
-			
-			render::renderAudio(audioBuffer);
-		}
-	  
-		shouldContinue = render::frame(ppu::getBuffer());
+		int16_t* audioBuffer = nullptr;
+		uint32_t* videoBuffer = nullptr;
+		core::frame(&videoBuffer, &audioBuffer);
+		shouldContinue = render::frame(videoBuffer, audioBuffer);
 	} while(shouldContinue);
 	
 	render::deinit();
-	apu::deinit();
-    ppu::deinit();
-    cpu::deinit();
+	core::deinit();
 	return 0;
 }

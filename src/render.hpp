@@ -4,8 +4,7 @@
 
 namespace render {
 	void init();
-	void reset();
-	bool frame(uint32_t* frameBuffer);
+	bool frame(uint32_t* frameBuffer, int16_t* audioBuffer);
 	void renderAudio(int16_t* audioBuffer);
 	void updateInput();
 	void deinit();

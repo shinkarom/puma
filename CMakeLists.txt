@@ -46,6 +46,7 @@ add_executable(${PROJ_NAME}
 	src/ppu.cpp
 	src/input.cpp
 	src/color.cpp
+	src/core.cpp
 )
 
 target_link_libraries(${PROJ_NAME} stdc++exp SDL3-static musashi)

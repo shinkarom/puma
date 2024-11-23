@@ -10,10 +10,8 @@
 
 #include "common.hpp"
 #include "input.hpp"
-#include "cpu.hpp"
 #include "bus.hpp"
-#include "ppu.hpp"
-#include "apu.hpp"
+#include "core.hpp"
 
 constexpr int msPerFrame = 1000 / framesPerSecond;
 constexpr SDL_AudioSpec spec = {.format = SDL_AUDIO_S16LE, .channels=2, .freq=audioSampleRate};
@@ -126,7 +124,7 @@ bool drawMenuBar(bool input) {
 			}
 			if (ImGui::MenuItem("Reset", nullptr, false)) {
 				if(isFileLoaded) {
-					render::reset();
+					core::reset();
 				}
 				
 			}
@@ -163,23 +161,11 @@ namespace render {
 		initAudio();	
 	}
 	
-	void reset() {
-		if(!isFileLoaded) {
-			return;
-		}
-		bus::reset();
-		cpu::reset();
-		ppu::reset();
-		apu::reset();	
-		isRunning = true;
-	}
-	
 	bool tryLoadFile(std::string fileName) {
-		if(!bus::load(fileName.c_str())) {
+		if(!core::tryLoadFile(fileName)) {
 			std::cout<<"File couldn't be loaded."<<std::endl;
 			return false;
 		} else {
-			reset();
 			return true;
 		}
 	}
@@ -194,7 +180,11 @@ namespace render {
 		}
 	}
 	
-	bool frame(uint32_t* frameBuffer) {
+	void renderAudio(int16_t* audioBuffer) {
+		SDL_PutAudioStreamData(stream, audioBuffer, samplesPerFrame*2*2);
+	}
+	
+	bool frame(uint32_t* frameBuffer, int16_t* audioBuffer) {
 		bool wasFullscreen = isFullscreen;
 		bool result = true;
 		while(SDL_PollEvent(&event)) {
@@ -280,13 +270,11 @@ namespace render {
 			SDL_SetWindowFullscreen(window, isFullscreen);
 		}
 		
+		renderAudio(audioBuffer);
+		
 		handleFrameTiming();
 		
 		return result;
-	}
-	
-	void renderAudio(int16_t* audioBuffer) {
-		SDL_PutAudioStreamData(stream, audioBuffer, samplesPerFrame*2*2);
 	}
 	
 	void deinit() {

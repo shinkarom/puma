@@ -8,7 +8,7 @@ namespace apu {
 	void reset();
 	void deinit();
 	void afterFrame();
-	int16_t* callback();
+	void frame();
 	int16_t* getBuffer();
 	void writeReg(int reg, int value);
 	void noteOn(int channelNum, int keyNum, int vel);

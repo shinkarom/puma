@@ -65,11 +65,10 @@ namespace apu {
 		
 	}
 	
-	int16_t* callback() {
+	void frame() {
 		if(hasAudio) {
 			tsf_render_short(sf, audioBuffer, samplesPerFrame);
 		}
-		return audioBuffer;
 	}
 	
 	void writeReg(int reg, int value) {
@@ -132,6 +131,10 @@ namespace apu {
 			return;
 		}
 		tsf_channel_set_presetindex(sf, channelNum, value);
+	}
+	
+	int16_t* getBuffer() {
+		return audioBuffer;
 	}
 	
 }

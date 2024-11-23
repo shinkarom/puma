@@ -10,7 +10,6 @@
 
 #include "common.hpp"
 #include "input.hpp"
-#include "bus.hpp"
 #include "core.hpp"
 
 constexpr int msPerFrame = 1000 / framesPerSecond;
@@ -69,8 +68,6 @@ void initImGui() {
 	io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable multi-viewport support
-	//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable docking if desired
 	io.IniFilename = nullptr;
 	
 	ImGui_ImplSDL3_InitForOpenGL(window, gl_context);
@@ -174,7 +171,7 @@ namespace render {
 		auto kbState = SDL_GetKeyboardState(nullptr);
 		for (int i = 0; i < numInputs; i++) {
 			input::previouslyPressedInputs[i] = input::pressedInputs[i];
-			input::pressedInputs[i] = kbState[input::inputMapping[i]];
+			input::pressedInputs[i] = kbState[inputMapping[i]];
 			input::justPressedInputs[i] = (! input::previouslyPressedInputs[i]) && input::pressedInputs[i];
 			input::justReleasedInputs[i] = input::previouslyPressedInputs[i] & (! input::pressedInputs[i]);
 		}

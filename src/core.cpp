@@ -29,6 +29,8 @@ namespace core {
 	}
 	
 	bool frame(uint32_t** videoBuffer, int16_t** audioBuffer) {
+		*audioBuffer = apu::getBuffer();
+		*videoBuffer = ppu::getBuffer();
 		if(isFileLoaded && isRunning) {
 			// input::beforeFrame();
 		
@@ -37,8 +39,7 @@ namespace core {
 			cpu::frame();
 			ppu::afterFrame();
 			 apu::afterFrame();
-			*audioBuffer = apu::callback();
-			*videoBuffer = ppu::getBuffer();
+			 apu::frame();
 			return true;
 		}
 		return false;

@@ -228,15 +228,11 @@ void syscall_handler(int value) {
 			break;
 		}
 		case API_drawText: {
-			// font_origin, text_origin, x, y, color
-			auto color = popColor();
 			auto y = bus::pop16();
 			auto x = bus::pop16();
 			auto textOrigin = bus::pop32();
-			auto fontHeight = bus::pop16();
-			auto fontWidth = bus::pop16();
 			auto fontOrigin = bus::pop32();
-			ppu::drawText(fontOrigin, fontWidth, fontHeight, textOrigin, x, y, color);
+			ppu::drawText(fontOrigin, textOrigin, x, y);
 			break;
 		}
 		case API_getRandomNumber: {

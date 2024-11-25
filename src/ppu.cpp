@@ -9,7 +9,6 @@
 
 constexpr auto HFLIP_MASK = 1<<0;
 constexpr auto VFLIP_MASK = 1<<1;
-constexpr auto BITMASK_MASK = 1<<2;
 
 namespace ppu {
 	
@@ -92,19 +91,8 @@ namespace ppu {
 		auto yy = y_start;
 		uint32_t color;
 		for(int _i = 0; _i < w * h; _i++) {
-			if(options & BITMASK_MASK) {
-				uint8_t byte_data = bus::read8(pxa);
-				uint8_t pixel_data = (byte_data >> (7 - bitOffset)) & 0x01;
-				color = palette1bit[pixel_data];
-				bitOffset = (bitOffset + 1) % 8; // Move to the next 1-bit position
-				if (bitOffset == 0) pxa += 1; // Move to next byte after 8 pixels
-				//std::cout<<std::hex<<(int)(pxa)<<" "<<bitOffset<<" "<<color<<std::dec<<std::endl;
-			}
-			else {
-				color = color::palette16bit[bus::read16(pxa)];
-				pxa += 2;
-			}
-			
+			color = color::palette16bit[bus::read16(pxa)];
+			pxa += 2;
 			//std::cout<<xx<<" "<<yy<<" "<<std::hex<<color<<std::dec<<std::endl;
 			setFullPixel(xx, yy, color);
 			xx+=x_delta;
@@ -256,10 +244,7 @@ namespace ppu {
 		}
 	}
 
-	void drawText(uint32_t fontOrigin, int16_t fontWidth, int16_t fontHeight, uint32_t textOrigin, uint16_t x, uint16_t y, uint32_t color) {
-		uint32_t oldColor;
-		oldColor = palette1bit[1];
-		palette1bit[1] = color;
+	void drawText(uint32_t fontOrigin, uint32_t textOrigin, uint16_t x, uint16_t y) {
 		auto letterOffset = textOrigin;
 		auto xOffset = x;
 		do {
@@ -267,19 +252,15 @@ namespace ppu {
 			if(letter == 0) {
 				break;
 			}
-			auto letterAddress = fontOrigin + (letter-32)*8;
+			auto letterAddress = fontOrigin + (letter-32)*128;
 			if(letter<32 || letter>127) {
 				
 			} else {
-				drawSprite(letterAddress, xOffset, y, fontWidth, fontHeight, BITMASK_MASK);
+				drawSprite(letterAddress, xOffset, y, 8, 8, 0x0000);
 			}
 			letterOffset++;
-			xOffset+=fontWidth;
-			if(xOffset>=screenWidth) {
-				break;
-			}
-		} while(true);
-		palette1bit[1] = oldColor;
+			xOffset+=8;
+		} while(xOffset<screenWidth);
 	}
 	
 }

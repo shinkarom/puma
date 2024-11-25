@@ -10,9 +10,13 @@
 constexpr auto HFLIP_MASK = 1<<0;
 constexpr auto VFLIP_MASK = 1<<1;
 
+int currentPixel, currentXPos,currentYPos;
+uint32_t* pixelPointer;
+
 namespace ppu {
 	
-	static uint32_t *frame_buf;
+	uint32_t frameBuffer[screenTotalPixels];
+	uint32_t secondBuffer[screenTotalPixels];
 	
 	uint32_t palette1bit[2] = {transparentColor, 0xFFFFFFFF};
 	
@@ -22,35 +26,63 @@ namespace ppu {
 		if(x < 0 || x >= screenWidth || y<0 || y >= screenHeight || ((color&0xFF000000) == 0x00000000)) {
 			return;
 		}
-		frame_buf[y*screenWidth+x] = color;
+		secondBuffer[y*screenWidth+x] = color;
 		//std::cout<<"Set pixel at "<<x<<" "<<y<<" with "<<std::hex<<color<<std::dec<<std::endl;
 	}
 	
 	void init() {
-		 frame_buf = new uint32_t[screenTotalPixels]; 
 		 reset();
 	}
 	
 	void deinit() {
-		delete[] frame_buf;
+		
 	}
 	
 	void reset() {
-		memset(frame_buf,0,screenTotalPixels*sizeof(uint32_t));
+		memset(frameBuffer,0,screenTotalPixels*sizeof(uint32_t));
+		memset(secondBuffer,0,screenTotalPixels*sizeof(uint32_t));
 	}
 	
 	void beforeFrame() {
-			
+		currentPixel = 0;
+		currentXPos = 0;
+		currentYPos = 0;
+		pixelPointer = &frameBuffer[0];		
+	}
+	
+	uint32_t evaluatePixel(int x, int y) {
+		return secondBuffer[y*screenWidth+x];
+	}
+	
+	void runFor(int pixelsToRun) {
+		if(pixelsToRun < 0 || currentPixel >= screenTotalPixels) {
+			return;
+		}
+		for(int i = 0; i < pixelsToRun; i++) {
+			*pixelPointer = evaluatePixel(currentXPos,currentYPos);
+			currentPixel++;
+			pixelPointer++;
+			currentXPos++;
+			if(currentXPos >= screenWidth) {
+				currentXPos = 0;
+				currentYPos++;
+			}
+			if(currentPixel >= screenTotalPixels) {
+				break;
+			}
+		}
 	}
 	
 	void afterFrame() {
-
+		if(currentPixel < screenTotalPixels - 1) {
+			runFor(screenTotalPixels - currentPixel - 1);
+		}
 	}
 	
 	void clear(uint32_t color) {
 		/*
 		for(int i = 0; i<screenTotalPixels; i++) {
-			frame_buf[i] = (color|0xFF000000);
+			frameBuffer[i] = (color|0xFF000000);
 		}	
 		*/
 		drawRectangleFilled(0, 0, screenWidth-1, screenHeight-1, color);
@@ -107,7 +139,7 @@ namespace ppu {
 	}
 	
 	uint32_t* getBuffer() {
-		return frame_buf;
+		return frameBuffer;
 	}
 	
 	void set1bitPalette(uint32_t color) {

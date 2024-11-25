@@ -21,6 +21,7 @@ namespace ppu {
 	void drawTriangleOutline(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, uint32_t color);
 	void drawTriangleFilled(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, uint32_t color);
 	void drawText(uint32_t fontOrigin, uint32_t textOrigin, uint16_t x, uint16_t y);
+	void runFor(int pixelsToRun);
 	
 	uint32_t* getBuffer();
 }

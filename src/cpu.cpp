@@ -72,17 +72,7 @@ enum {
 	API_isPressed,
 	API_isJustPressed,
 	API_isJustReleased,
-	API_set1bitPalette,
-	API_cls,
-	API_setPixel,
 	API_drawSprite,
-	API_drawLine,
-	API_drawCircle,
-	API_drawCircleOutline,
-	API_drawRectangle, 
-	API_drawRectangleOutline,
-	API_drawTriangle,
-	API_drawTriangleOutline,
 	API_drawText,
 	API_getRandomNumber,
 	API_printStack,
@@ -142,11 +132,6 @@ void syscall_handler(int value) {
 			}
 			break;
 		}
-		case API_cls: {
-			auto color = popColor();
-			ppu::clear(color);
-			break;
-		}
 		case API_drawSprite: {
 			auto options = bus::pop16();
 			auto h = bus::pop16();
@@ -155,76 +140,6 @@ void syscall_handler(int value) {
 			auto x = bus::pop16();
 			auto address = bus::pop32();
 			ppu::drawSprite(address, x, y, w, h, options);
-			break;
-		}
-		case API_set1bitPalette: {
-			auto color = popColor();
-			ppu::set1bitPalette(color);
-			break;
-		}
-		case API_drawLine: {
-			auto color = popColor();
-			auto y2 = bus::pop16();
-			auto x2 = bus::pop16();
-			auto y1 = bus::pop16();
-			auto x1 = bus::pop16();
-			ppu::drawLine(x1, y1, x2, y2, color);
-			break;
-		}
-		case API_drawCircle: {
-			auto color = popColor();
-			auto radius = bus::pop16();
-			auto y0 = bus::pop16();
-			auto x0 = bus::pop16();
-			ppu::drawCircleFilled(x0, y0, radius, color);
-			break;
-		}
-		case API_drawCircleOutline: {
-			auto color = popColor();
-			auto radius = bus::pop16();
-			auto y0 = bus::pop16();
-			auto x0 = bus::pop16();
-			ppu::drawCircleOutline(x0, y0, radius, color);
-			break;
-		}
-		case API_drawRectangle: {
-			auto color = popColor();
-			auto y2 = bus::pop16();
-			auto x2 = bus::pop16();
-			auto y1 = bus::pop16();
-			auto x1 = bus::pop16();
-			ppu::drawRectangleFilled(x1, y1, x2, y2, color);
-			break;
-		}
-		case API_drawRectangleOutline: {
-			auto color = popColor();
-			auto y2 = bus::pop16();
-			auto x2 = bus::pop16();
-			auto y1 = bus::pop16();
-			auto x1 = bus::pop16();
-			ppu::drawRectangleOutline(x1, y1, x2, y2, color);
-			break;
-		}
-		case API_drawTriangle: {
-			auto color = popColor();
-			auto y3 = bus::pop16();
-			auto x3 = bus::pop16();
-			auto y2 = bus::pop16();
-			auto x2 = bus::pop16();
-			auto y1 = bus::pop16();
-			auto x1 = bus::pop16();
-			ppu::drawTriangleFilled(x1, y1, x2, y2, x3, y3, color);
-			break;
-		}
-		case API_drawTriangleOutline: {
-			auto color = popColor();
-			auto y3 = bus::pop16();
-			auto x3 = bus::pop16();
-			auto y2 = bus::pop16();
-			auto x2 = bus::pop16();
-			auto y1 = bus::pop16();
-			auto x1 = bus::pop16();
-			ppu::drawTriangleOutline(x1, y1, x2, y2, x3, y3, color);
 			break;
 		}
 		case API_drawText: {

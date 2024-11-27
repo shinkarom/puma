@@ -106,11 +106,6 @@ void syscall_handler(int value) {
 		}
 		case API_isPressed: {
 			auto keynum = bus::pop16();
-			//if(input::isPressed(keynum)) {
-			//	bus::push16(1);
-			//} else {
-			//	bus::push16(0);
-			//}
 			bus::push16(input::isPressed(keynum));
 			break;
 		}

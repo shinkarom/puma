@@ -11,11 +11,18 @@
 constexpr auto HFLIP_MASK = 1<<0;
 constexpr auto VFLIP_MASK = 1<<1;
 
+struct obj {
+	uint32_t address;
+	uint8_t xx, ww;
+	uint16_t options;
+};
+
 int currentPixel, currentXPos, currentYPos;
 uint32_t* pixelPointer;
 int addedSprites;
 int objAddr;
-std::vector<int> spritesOnScanline;
+std::vector<obj> spritesOnScanline;
+int hScroll, vScroll;
 
 namespace ppu {
 	
@@ -31,7 +38,11 @@ namespace ppu {
 	}
 	
 	void init() {
+		std::cout<<std::hex<<"Tileset: "<<tilesetOffset<<std::dec<<std::endl;
 		std::cout<<std::hex<<"OAM: "<<oamOffset<<std::dec<<std::endl;
+		std::cout<<std::hex<<"Tilemap: "<<tilemapOffset<<std::dec<<std::endl;
+		std::cout<<std::hex<<"HScroll: "<<hScrollAddress<<std::dec<<std::endl;
+		std::cout<<std::hex<<"VScroll: "<<vScrollAddress<<std::dec<<std::endl;
 		 reset();
 	}
 	
@@ -42,6 +53,8 @@ namespace ppu {
 	void reset() {
 		memset(frameBuffer,0,screenTotalPixels*sizeof(uint32_t));
 		memset(secondBuffer,0,screenTotalPixels*sizeof(uint32_t));
+		hScroll = 0;
+		vScroll = 0;
 	}
 	
 	void beforeFrame() {
@@ -54,41 +67,76 @@ namespace ppu {
 	}
 	
 	uint32_t evaluatePixel(int x, int y) {
-		for(auto i = spritesOnScanline.begin(); i != spritesOnScanline.end(); ) {
-			auto oamCursor = oamOffset+(*i)*10;
-			auto addr = bus::read32(oamCursor);			
-			if(addr == 0) {
-				break;
-			}
-			auto xx = bus::read8(oamCursor+4);
-			auto yy = bus::read8(oamCursor+5);
-			auto ww = bus::read8(oamCursor+6);
-			auto hh = bus::read8(oamCursor+7);
-			auto options = bus::read16(oamCursor+8);
-			int yOffset = y-yy;
+		for(auto i : spritesOnScanline) {
+			auto addr = i.address;
+			auto xx = i.xx;
+			auto ww = i.ww;
+			auto options = i.options;
 			int xOffset = x-xx;
-			if(yOffset<0 || yOffset>=hh) {
-				i = spritesOnScanline.erase(i);
-				continue;
-			}
 			if(xOffset<0 || xOffset >= ww) {
-				++i;
 				continue;
-			}
-			if(options && VFLIP_MASK) {
-				yOffset = hh-yOffset;
 			}
 			if(options && HFLIP_MASK) {
 				xOffset = ww-xOffset;
 			}
-			auto newPixel = color::palette16bit[bus::read16(addr+2*ww*yOffset+2*xOffset)];
+			auto newPixel = color::palette16bit[bus::read16(addr+2*xOffset)];
 			//std::cout<<x<<" "<<y<<" "<<std::hex<<newPixel<<std::dec<<std::endl;
 			if((newPixel&0xFF000000)==0xFF000000) {
 				return newPixel;
 			}
-			++i;
 		}
+		auto xPos = (hScroll + x) % (tilemapWidth * 8);
+		auto yPos = (vScroll + y) % (tilemapHeight * 8);
+		auto hScrollMain = xPos / 8;
+		auto hScrollRem = xPos % 8;
+		auto vScrollMain = yPos / 8;
+		auto vScrollRem = yPos % 8;
+		auto tileAddr = tilemapOffset+(vScrollMain * tilemapWidth + hScrollMain)*4;
+		auto tileNum = bus::read16(tileAddr);
+		
+		auto options = bus::read16(tileAddr+2);
+		if(options & VFLIP_MASK) {
+			vScrollRem = 8 - vScrollRem;
+		}
+		if(options & HFLIP_MASK) {
+			hScrollRem = 8 - hScrollRem;
+		}
+		auto tileStart = tilesetOffset + tileNum * 128;
+		auto pixelAddr = tileStart + (8*2*vScrollRem) + (2*hScrollRem);
+		auto pixelColor = color::palette16bit[bus::read16(pixelAddr)];
+		if((pixelColor&0xFF000000)==0xFF000000) {
+				return pixelColor;
+			}
+		
 		return 0xFF000000;
+	}
+	
+	void updateScanlineList() {
+		spritesOnScanline.clear();
+			for (int i = 0; i < numObjects; ++i) {
+				auto a = oamOffset+i*10;
+				auto addr = bus::read32(a);
+				if(addr == 0) {
+					break;
+				}
+				auto xx = bus::read8(a+4);
+				auto yy = bus::read8(a+5);
+				auto ww = bus::read8(a+6);
+				auto hh = bus::read8(a+7);
+				auto yOffset = currentYPos - yy;
+				if(yOffset <0 || yOffset >= hh) {
+					continue;
+				}
+				auto options = bus::read16(a+8);
+				if(options && VFLIP_MASK) {
+					yOffset = hh-yOffset;
+				}
+				addr += 2*ww*yOffset;
+				struct obj o = {.address = addr, 
+					.xx = xx, .ww = ww, 
+					.options = options};
+				spritesOnScanline.push_back(o);
+			}
 	}
 	
 	void runFor(int pixelsToRun) {
@@ -97,13 +145,9 @@ namespace ppu {
 		}
 		for(int i = 0; i < pixelsToRun; i++) {
 			if(currentXPos == 0) {
-				spritesOnScanline.clear();
-				// Fill the vector with numbers from 0 to 127
-				for (int i = 0; i <= 127; ++i) {
-					spritesOnScanline.push_back(i);
-				}
+				updateScanlineList();
 			}
-			*pixelPointer = evaluatePixel(currentXPos,currentYPos);
+			*pixelPointer = evaluatePixel(currentXPos, currentYPos);
 			currentPixel++;
 			pixelPointer++;
 			currentXPos++;

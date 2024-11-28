@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdint>
 #include <random>
+#include <algorithm>
 
 #include "bus.hpp"
 #include "ppu.hpp"
@@ -141,7 +142,7 @@ void syscall_handler(int value) {
 			auto y = bus::pop16();
 			auto x = bus::pop16();
 			auto textOrigin = bus::pop32();
-			auto fontOrigin = bus::pop32();
+			auto fontOrigin = bus::pop16();
 			ppu::drawText(fontOrigin, textOrigin, x, y);
 			break;
 		}

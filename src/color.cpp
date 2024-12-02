@@ -5,11 +5,12 @@
 namespace color {
 	
 	uint32_t palette16bit[65536];
+	bool colorTransparency[65536];
 	 
 	void init() {
 		for(int i = 0; i < 65536; i++) {
 			 palette16bit[i] = convert16to32color(i);
-		 }
+		}
 	}
 	
 	/// Convert 32-bit ARGB8888 to 16-bit ARGB4444

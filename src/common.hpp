@@ -4,8 +4,8 @@
 
 constexpr int numInputs = 12;
 
-constexpr auto screenWidth = 256;
-constexpr auto screenHeight = 256;
+constexpr auto screenWidth = 160;
+constexpr auto screenHeight = 160;
 constexpr auto screenTotalPixels = screenWidth * screenHeight;
 
 constexpr auto framesPerSecond = 60;
@@ -29,23 +29,7 @@ constexpr auto maxFileSize = totalMemory - 0x200 - systemMemorySize;
 constexpr auto codeOffset = 0x200;
 constexpr auto stackOffset = totalMemory;
 
-constexpr auto numTilemapScreens = 2;
-constexpr auto tilemapWidth = screenWidth / tileSide * numTilemapScreens;
-constexpr auto tilemapHeight = screenHeight / tileSide * numTilemapScreens;
-constexpr auto tilemapSize = tilemapWidth * tilemapHeight * 4;
-
-constexpr auto numObjects = 128;
-constexpr auto objectEntrySize = 10;
-constexpr auto oamSize = numObjects * objectEntrySize;
-
-constexpr auto tilesetOffset = systemMemoryStart;
-constexpr auto oamOffset = tilesetOffset + tilesetSizeBytes;
-
-constexpr auto tilemapOffset = oamOffset + oamSize;
-constexpr auto hScrollAddress = tilemapOffset + tilemapSize;
-constexpr auto vScrollAddress = hScrollAddress + 2;
-
-constexpr auto numApuChannels = 16;
+constexpr auto numApuChannels = 4;
 
 constexpr auto syscallStackAddress = 0xFFFFFFF9;
 constexpr auto syscallAddress = 0xFFFFFFFC;

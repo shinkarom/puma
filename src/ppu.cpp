@@ -9,9 +9,6 @@
 #include "bus.hpp"
 #include "color.hpp"
 
-constexpr auto HFLIP_MASK = 0b1;
-constexpr auto VFLIP_MASK = 0b10;
-
 constexpr bool isColorTransparent(uint32_t color) {
 		return (color & 0x8000)  == 0;
 }
@@ -20,13 +17,7 @@ namespace ppu {
 	
 	uint32_t frameBuffer[screenTotalPixels];
 	
-	void init() {
-		std::cout<<std::hex<<"Tileset: "<<tilesetOffset<<std::dec<<std::endl;
-		std::cout<<std::hex<<"OAM: "<<oamOffset<<std::dec<<std::endl;
-		std::cout<<std::hex<<"Tilemap: "<<tilemapOffset<<std::dec<<std::endl;
-		std::cout<<std::hex<<"HScroll: "<<hScrollAddress<<std::dec<<std::endl;
-		std::cout<<std::hex<<"VScroll: "<<vScrollAddress<<std::dec<<std::endl;
-		
+	void init() {	
 		 reset();
 	}
 	
@@ -47,14 +38,14 @@ namespace ppu {
 		
 	}
 	
-	void drawSprite(uint32_t address, int x, int y, int w, int h, uint16_t options) {		
+	void drawSprite(uint32_t address, int x, int y, int w, int h) {		
 		for(int yy = 0; yy < h; yy++) {
-			const auto yyy = (options & VFLIP_MASK) ? y + (h-1-yy) : y + yy;
+			const auto yyy = y + yy;
 			if(yyy > screenHeight) {
 				break;
 			}
 			for(int xx = 0; xx < w; xx++){
-				const auto xxx = (options & HFLIP_MASK) ? x + (w-1-xx) : x + xx;
+				const auto xxx = x + xx;
 				if(xxx>screenWidth) {
 					break;
 				}
@@ -83,7 +74,7 @@ namespace ppu {
 			if(letter<32 || letter>127) {
 				
 			} else {
-				drawSprite(letterAddress, xOffset, y, 8, 8, 0x0000);
+				drawSprite(letterAddress, xOffset, y, 8, 8);
 			}
 			letterOffset++;
 			xOffset+=8;

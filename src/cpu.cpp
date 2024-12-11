@@ -129,13 +129,12 @@ void syscall_handler(int value) {
 			break;
 		}
 		case API_drawSprite: {
-			auto options = bus::pop16();
 			auto h = bus::pop16();
 			auto w = bus::pop16();
 			auto y = bus::pop16();
 			auto x = bus::pop16();
 			auto address = bus::pop32();
-			ppu::drawSprite(address, x, y, w, h, options);
+			ppu::drawSprite(address, x, y, w, h);
 			break;
 		}
 		case API_drawText: {

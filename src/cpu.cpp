@@ -78,9 +78,7 @@ enum {
 	API_getRandomNumber,
 	API_printStack,
 	API_noteOn,
-	API_noteOff,
 	API_allNotesOff,
-	API_allSoundsOff,
 	API_setGlobalVolume,
 	API_setChannelVolume,
 	API_setChannelPan,
@@ -177,20 +175,9 @@ void syscall_handler(int value) {
 			apu::noteOn(channelNum, keyNum, vel);
 			break;
 		}
-		case API_noteOff: {
-			int keyNum = bus::pop8();
-			int channelNum = bus::pop8();
-			apu::noteOff(channelNum, keyNum);
-			break;	
-		}
 		case API_allNotesOff: {
 			int channelNum = bus::pop8();
 			apu::allNotesOff(channelNum);
-			break;
-		}
-		case API_allSoundsOff: {
-			int channelNum = bus::pop8();
-			apu::allSoundsOff(channelNum);
 			break;
 		}
 		case API_setGlobalVolume: {

@@ -81,6 +81,7 @@ namespace apu {
 		if(!hasAudio || channelNum < 0 || channelNum >= numApuChannels) {
 			return;
 		}
+		tsf_channel_note_off_all(sf, channelNum);
 		tsf_channel_note_on(sf, channelNum, keyNum, vel/127.0);
 	}
 	
@@ -95,13 +96,6 @@ namespace apu {
 			return;
 		}
 		tsf_channel_note_off_all(sf, channelNum);
-	}
-	
-	void allSoundsOff(int channelNum) {
-		if(!hasAudio || channelNum < 0 || channelNum >= numApuChannels) {
-			return;
-		}
-		tsf_channel_sounds_off_all(sf, channelNum);
 	}
 	
 	void setChannelVolume(int channelNum, int value) {

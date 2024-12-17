@@ -13,7 +13,7 @@ constexpr auto framesPerSecond = 60;
 constexpr auto audioSampleRate = 44100;
 constexpr int samplesPerFrame = audioSampleRate / framesPerSecond;
 
-constexpr auto cpuClockRate = 30*1024*1024;
+constexpr auto cpuClockRate = 15*1024*1024;
 constexpr auto cyclesPerFrame = cpuClockRate / framesPerSecond;
 
 constexpr auto tileSide = 8;
@@ -29,7 +29,7 @@ constexpr auto maxFileSize = totalMemory - 0x200 - systemMemorySize;
 constexpr auto codeOffset = 0x200;
 constexpr auto stackOffset = totalMemory;
 
-constexpr auto numApuChannels = 4;
+constexpr auto numApuChannels = 16;
 
 constexpr auto syscallStackAddress = 0xFFFFFFF9;
 constexpr auto syscallAddress = 0xFFFFFFFC;

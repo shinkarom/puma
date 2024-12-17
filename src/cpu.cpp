@@ -77,12 +77,9 @@ enum {
 	API_drawText,
 	API_getRandomNumber,
 	API_printStack,
-	API_noteOn,
-	API_allNotesOff,
 	API_setGlobalVolume,
 	API_setChannelVolume,
 	API_setChannelPan,
-	API_setChannelPreset,
 };
 
 void syscall_handler(int value) {
@@ -168,18 +165,6 @@ void syscall_handler(int value) {
 			std::cout<<"sp="<<t<<" "<<std::dec<<"---"<<std::endl;
 			break;
 		}
-		case API_noteOn: {
-			int vel = bus::pop8();
-			int keyNum = bus::pop8();
-			int channelNum = bus::pop8();
-			apu::noteOn(channelNum, keyNum, vel);
-			break;
-		}
-		case API_allNotesOff: {
-			int channelNum = bus::pop8();
-			apu::allNotesOff(channelNum);
-			break;
-		}
 		case API_setGlobalVolume: {
 			int value = bus::pop8();
 			apu::setGlobalVolume(value);
@@ -195,12 +180,6 @@ void syscall_handler(int value) {
 			int value = bus::pop8();
 			int channelNum = bus::pop8();
 			apu::setChannelPan(channelNum, value);
-			break;
-		}
-		case API_setChannelPreset: {
-			int value = bus::pop16();
-			int channelNum = bus::pop8();
-			apu::setChannelPreset(channelNum, value);
 			break;
 		}
 		default:

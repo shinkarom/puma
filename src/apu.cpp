@@ -11,6 +11,8 @@
 int16_t audioBuffer[samplesPerFrame*2];
 tsf* sf;
 bool hasAudio = false;
+int noteVelocities[numApuChannels];
+int notePresets[numApuChannels];
 
 namespace apu {
 		
@@ -19,6 +21,8 @@ namespace apu {
 			tsf_channel_set_presetindex(sf, i, 0);
 			tsf_channel_set_pan(sf, i, 0.5);
 			tsf_channel_set_volume(sf, i, 1.0);
+			noteVelocities[i] = 127;
+			notePresets[i] = 0;
 		}
 	}	
 		
@@ -72,7 +76,35 @@ namespace apu {
 	}
 	
 	void writeReg(int reg, int value) {
-		
+		auto channelNum = reg % numApuChannels;
+		switch(reg / numApuChannels) {
+			case 0: {
+				auto v = value > 127 ? value - 127: value;
+				tsf_channel_note_off_all(sf, channelNum);
+				if(v != 0) {
+					tsf_channel_note_on(sf, channelNum, v, noteVelocities[channelNum]/127.0);
+				}
+				break;
+			}
+			case 1:{
+				auto v = value & 0xFF;
+				notePresets[channelNum] = (notePresets[channelNum]&0x00FF)| (v<<8);
+				tsf_channel_set_presetindex(sf, channelNum, notePresets[channelNum]);
+				break;
+			}
+			case 2: {
+				auto v = value & 0xFF;
+				notePresets[channelNum] = (notePresets[channelNum]&0xFF00)| (v);
+				tsf_channel_set_presetindex(sf, channelNum, notePresets[channelNum]);
+				break;
+			}
+			case 3: {
+				auto v = value & 0xFF;
+				noteVelocities[channelNum] = v;
+			}
+			default:
+				break;
+		}
 		
 		//std::cout<<"Audio register "<<std::hex<<reg<<" with "<<value<<std::dec<<std::endl;
 	}

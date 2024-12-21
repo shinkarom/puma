@@ -13,6 +13,7 @@ tsf* sf;
 bool hasAudio = false;
 int noteVelocities[numApuChannels];
 int notePresets[numApuChannels];
+int currentChannel;
 
 namespace apu {
 		
@@ -24,6 +25,7 @@ namespace apu {
 			noteVelocities[i] = 127;
 			notePresets[i] = 0;
 		}
+		currentChannel = 0;
 	}	
 		
 	void init() {
@@ -76,31 +78,35 @@ namespace apu {
 	}
 	
 	void writeReg(int reg, int value) {
-		auto channelNum = reg % numApuChannels;
-		switch(reg / numApuChannels) {
+		switch(reg) {
 			case 0: {
+				auto v = value & 0xF;
+				currentChannel = v;
+				break;
+			}
+			case 1: {
 				auto v = value > 127 ? value - 127: value;
-				tsf_channel_note_off_all(sf, channelNum);
+				tsf_channel_note_off_all(sf, currentChannel);
 				if(v != 0) {
-					tsf_channel_note_on(sf, channelNum, v, noteVelocities[channelNum]/127.0);
+					tsf_channel_note_on(sf, currentChannel, v, noteVelocities[currentChannel]/127.0);
 				}
 				break;
 			}
-			case 1:{
+			case 2:{
 				auto v = value & 0xFF;
-				notePresets[channelNum] = (notePresets[channelNum]&0x00FF)| (v<<8);
-				tsf_channel_set_presetindex(sf, channelNum, notePresets[channelNum]);
-				break;
-			}
-			case 2: {
-				auto v = value & 0xFF;
-				notePresets[channelNum] = (notePresets[channelNum]&0xFF00)| (v);
-				tsf_channel_set_presetindex(sf, channelNum, notePresets[channelNum]);
+				notePresets[currentChannel] = (notePresets[currentChannel]&0x00FF)| (v<<8);
+				tsf_channel_set_presetindex(sf, currentChannel, notePresets[currentChannel]);
 				break;
 			}
 			case 3: {
 				auto v = value & 0xFF;
-				noteVelocities[channelNum] = v;
+				notePresets[currentChannel] = (notePresets[currentChannel]&0xFF00)| (v);
+				tsf_channel_set_presetindex(sf, currentChannel, notePresets[currentChannel]);
+				break;
+			}
+			case 4: {
+				auto v = value & 0xFF;
+				noteVelocities[currentChannel] = v;
 			}
 			default:
 				break;

@@ -10,7 +10,7 @@
 #include "color.hpp"
 
 constexpr bool isColorTransparent(uint32_t color) {
-		return (color & 0x8000)  == 0;
+		return (color & 0xFF000000)  == 0;
 }
 
 namespace ppu {

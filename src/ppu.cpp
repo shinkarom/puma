@@ -9,10 +9,6 @@
 #include "bus.hpp"
 #include "color.hpp"
 
-constexpr bool isColorTransparent(uint32_t color) {
-		return (color & 0xFF000000)  == 0;
-}
-
 namespace ppu {
 	
 	uint32_t frameBuffer[screenTotalPixels];
@@ -40,7 +36,6 @@ namespace ppu {
 	
 	void drawSprite(uint32_t address, int x, int y, int w, int h, uint8_t flags) {
 
-		// Decode the flags from the uint8_t
 		bool flipHorizontal = flags & 0x01;       // Bit 0
 		bool flipVertical = flags & 0x02;         // Bit 1
 		bool doDrawAfterWrapHorizontal = flags & 0x04;       // Bit 2
@@ -48,43 +43,61 @@ namespace ppu {
 		bool noDrawBeforeWrapHorizontal = flags & 0x10; // Bit 4
 		bool noDrawBeforeWrapVertical = flags & 0x20;   // Bit 5
 		uint8_t paletteSelection = (flags >> 6) & 0x07; // Bits 6 to 8
-
+		
+		int rowOffset[h], frameBufferRowBase[h];
+		bool noDrawY[h];
+		uint32_t rowBase[h];
+		int rowWrapped;
 		for (int row = 0; row < h; row++) {
+			rowOffset[row] = flipVertical ? (h - 1 - row) : row;
+			rowWrapped = (y + row) % screenHeight;
+			noDrawY[row] = false;
+			if (rowWrapped >= y && noDrawBeforeWrapVertical) {
+				noDrawY[row] = true; 
+			} else
+			if (rowWrapped < y && !doDrawAfterWrapVertical) {
+				noDrawY[row] = true;
+			}
+			frameBufferRowBase[row] = rowWrapped * screenWidth;
 			
-			int rowAdjusted = flipVertical ? (h - 1 - row) : row;
-			
-			const auto yyy = (y + row) % screenHeight;
-			if (yyy >= y && noDrawBeforeWrapVertical) {
+			if (!paletteSelection) {
+				rowBase[row] = address + 2 * w * rowOffset[row];
+			} else {
+				rowBase[row] = address + w * rowOffset[row];
+			}
+		}
+		
+		int colOffset[w],colWrapped[w];
+		bool noDrawX[w];
+		for (int col = 0; col < w; col++) {
+			colOffset[col] = flipHorizontal ? (w - 1 - col) : col;
+			colWrapped[col] = (x + col) % screenWidth;
+			noDrawX[col] = false;
+			if (colWrapped[col] >= x && noDrawBeforeWrapHorizontal) {
+				noDrawX[col] = true; 
+			} else
+			if(colWrapped[col] < x && !doDrawAfterWrapHorizontal) {
+				noDrawX[col] = true; 
+			}
+		}
+		
+		for (int row = 0; row < h; row++) {
+			if (noDrawY[row]) {
 				continue; 
 			}
-			if (yyy < y && !doDrawAfterWrapVertical) {
-				continue;
-			}
-
 			for (int col = 0; col < w; col++) {
-				// Apply horizontal flipping if enabled
-				int colAdjusted = flipHorizontal ? (w - 1 - col) : col;
-
-				const auto xxx = (x + col) % screenWidth;
-				if (xxx >= x && noDrawBeforeWrapHorizontal) {
+				if (noDrawX[col]) {
 					continue; 
 				}
-				if(xxx < x && !doDrawAfterWrapHorizontal) {
-					continue;
-				}
-
-				// Determine the correct color read method based on the color depth flag
 				uint32_t pixelColor;
 				if (!paletteSelection) {
-					// Use 16-bit color palette
-					pixelColor = color::palette16bit[bus::read16(address + 2 * w * rowAdjusted + 2 * colAdjusted)];
+					pixelColor = color::palette16bit[bus::read16(rowBase[row] + 2 * colOffset[col])];
 				} else {
-					// Use 8-bit color palette based on paletteSelection
-					pixelColor = color::palette8bit[paletteSelection - 1][bus::read8(address + w * rowAdjusted + colAdjusted)];
+					pixelColor = color::palette8bit[paletteSelection - 1][bus::read8(rowBase[row] + colOffset[col])];
 				}
 
-				if (!isColorTransparent(pixelColor)) {
-					frameBuffer[yyy * screenWidth + xxx] = pixelColor;
+				if (pixelColor != transparentColor) {
+					frameBuffer[frameBufferRowBase[row] + colWrapped[col]] = pixelColor;
 				}
 			}
 		}

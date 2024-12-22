@@ -4,8 +4,8 @@
 
 constexpr int numInputs = 12;
 
-constexpr auto screenWidth = 160;
-constexpr auto screenHeight = 160;
+constexpr auto screenWidth = 192;
+constexpr auto screenHeight = 192;
 constexpr auto screenTotalPixels = screenWidth * screenHeight;
 
 constexpr auto framesPerSecond = 60;

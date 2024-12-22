@@ -19,6 +19,8 @@ namespace render {
 		SDL_SCANCODE_S,	//Y
 		SDL_SCANCODE_Q,	//L
 		SDL_SCANCODE_W,	//R
+		
+		// ZXCVBNM,ASDFGHJKQWERTYUI12345678
 	};
 	
 	void init();

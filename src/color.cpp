@@ -6,15 +6,18 @@ namespace color {
 	
 	uint32_t palette16bit[65536];
 	bool colorTransparency[65536];
-	uint32_t palette8bit[256];
+	uint32_t palette8bit[8][256];
 	 
 	void init() {
 		for(int i = 0; i < 65536; i++) {
 			 palette16bit[i] = convert16to32color(i);
 		}
-		for(int i = 0; i < 256; i++) {
-			 palette8bit[i] = convert8to32color(i);
+		for(int j = 0; j < 7; j++) {
+			for(int i = 0; i < 256; i++) {
+				 palette8bit[j][i] = convert8to32color(i, j);
+			}
 		}
+		
 	}
 	
 	/// Convert 32-bit ARGB8888 to 16-bit ARGB4444
@@ -55,12 +58,29 @@ namespace color {
 	}
 	
 	
-	constexpr uint32_t convert8to32color(uint8_t color) {
+	constexpr uint32_t convert8to32color(uint8_t color, int j) {
 		uint32_t c = 0xFF000000 | (color << 16) | (color << 8) | color;
 		if(color == 0) {
 			return 0;
 		} else {
-			return c;
+			switch(j) {
+				case 0:
+					return c;
+				case 1:
+					return c & 0xFFFF0000;
+				case 2:
+					return c & 0xFF00FF00;
+				case 3:
+					return c & 0xFF0000FF;
+				case 4:
+					return c & 0xFFFFFF00;
+				case 5:
+					return c & 0xFFFF00FF;
+				case 6:
+					return c & 0xFF00FFFF;				
+				default:
+					return 0;
+			}
 		}
 		
 	}

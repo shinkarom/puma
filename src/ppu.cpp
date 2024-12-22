@@ -38,25 +38,58 @@ namespace ppu {
 		
 	}
 	
-	void drawSprite(uint32_t address, int x, int y, int w, int h) {		
-		for(int yy = 0; yy < h; yy++) {
-			const auto yyy = y + yy;
-			if(yyy > screenHeight) {
-				break;
-			}
-			for(int xx = 0; xx < w; xx++){
-				const auto xxx = x + xx;
-				if(xxx>screenWidth) {
-					break;
-				}
-				auto color = color::palette16bit[bus::read16(address + 2*w*yy + 2*xx)];
-				if(!isColorTransparent(color)) {
-					frameBuffer[yyy*screenWidth + xxx] = color;
-				}
-			}
+	void drawSprite(uint32_t address, int x, int y, int w, int h, uint8_t flags) {
+
+		// Decode the flags from the uint8_t
+		bool flipHorizontal = flags & 0x01;       // Bit 0
+		bool flipVertical = flags & 0x02;         // Bit 1
+		bool doDrawAfterWrapHorizontal = flags & 0x04;       // Bit 2
+		bool doDrawAfterWrapVertical = flags & 0x08;         // Bit 3
+		bool noDrawBeforeWrapHorizontal = flags & 0x10; // Bit 4
+		bool noDrawBeforeWrapVertical = flags & 0x20;   // Bit 5
+		uint8_t paletteSelection = (flags >> 6) & 0x07; // Bits 6 to 8
+
+		for (int row = 0; row < h; row++) {
 			
+			int rowAdjusted = flipVertical ? (h - 1 - row) : row;
+			
+			const auto yyy = (y + row) % screenHeight;
+			if (yyy >= y && noDrawBeforeWrapVertical) {
+				continue; 
+			}
+			if (yyy < y && !doDrawAfterWrapVertical) {
+				continue;
+			}
+
+			for (int col = 0; col < w; col++) {
+				// Apply horizontal flipping if enabled
+				int colAdjusted = flipHorizontal ? (w - 1 - col) : col;
+
+				const auto xxx = (x + col) % screenWidth;
+				if (xxx >= x && noDrawBeforeWrapHorizontal) {
+					continue; 
+				}
+				if(xxx < x && !doDrawAfterWrapHorizontal) {
+					continue;
+				}
+
+				// Determine the correct color read method based on the color depth flag
+				uint32_t pixelColor;
+				if (!paletteSelection) {
+					// Use 16-bit color palette
+					pixelColor = color::palette16bit[bus::read16(address + 2 * w * rowAdjusted + 2 * colAdjusted)];
+				} else {
+					// Use 8-bit color palette based on paletteSelection
+					pixelColor = color::palette8bit[paletteSelection - 1][bus::read8(address + w * rowAdjusted + colAdjusted)];
+				}
+
+				if (!isColorTransparent(pixelColor)) {
+					frameBuffer[yyy * screenWidth + xxx] = pixelColor;
+				}
+			}
 		}
 	}
+
 	
 	uint32_t* getBuffer() {
 		return frameBuffer;
@@ -74,7 +107,7 @@ namespace ppu {
 			if(letter<32 || letter>127) {
 				
 			} else {
-				drawSprite(letterAddress, xOffset, y, 8, 8);
+				drawSprite(letterAddress, xOffset, y, 8, 8,0);
 			}
 			letterOffset++;
 			xOffset+=8;

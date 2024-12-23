@@ -12,6 +12,7 @@
 namespace ppu {
 	
 	uint32_t frameBuffer[screenTotalPixels];
+	int drawnPixels;
 	
 	void init() {	
 		 reset();
@@ -26,7 +27,7 @@ namespace ppu {
 	}
 	
 	void beforeFrame() {
-		
+		drawnPixels = 0;
 	}
 	
 	
@@ -35,6 +36,9 @@ namespace ppu {
 	}
 	
 	void drawSprite(uint32_t address, int x, int y, int w, int h, uint8_t flags) {
+		if(drawnPixels >= drawnPixelQuota) {
+			return;
+		}
 
 		bool flipHorizontal = flags & 0x01;       // Bit 0
 		bool flipVertical = flags & 0x02;         // Bit 1
@@ -99,6 +103,7 @@ namespace ppu {
 				if (pixelColor != transparentColor) {
 					frameBuffer[frameBufferRowBase[row] + colWrapped[col]] = pixelColor;
 				}
+				drawnPixels++;
 			}
 		}
 	}

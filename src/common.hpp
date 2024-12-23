@@ -7,6 +7,7 @@ constexpr int numInputs = 12;
 constexpr auto screenWidth = 192;
 constexpr auto screenHeight = 192;
 constexpr auto screenTotalPixels = screenWidth * screenHeight;
+constexpr auto drawnPixelQuota = screenTotalPixels * 10;
 
 constexpr auto framesPerSecond = 60;
 

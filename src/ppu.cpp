@@ -102,8 +102,8 @@ namespace ppu {
 
 				if (pixelColor != transparentColor) {
 					frameBuffer[frameBufferRowBase[row] + colWrapped[col]] = pixelColor;
+					drawnPixels++;
 				}
-				drawnPixels++;
 			}
 		}
 	}

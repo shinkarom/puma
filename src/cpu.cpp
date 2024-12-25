@@ -101,25 +101,30 @@ void syscall_handler(int value) {
 			break;
 		}
 		case API_isPressed: {
-			auto keynum = bus::pop16();
-			bus::push16(input::isPressed(keynum));
+			auto keynum = bus::pop8();
+			auto res = input::isPressed(keynum);
+			if(res) {
+				bus::push8(1);
+			} else {
+				bus::push8(0);
+			}
 			break;
 		}
 		case API_isJustPressed: {
-			auto keynum = bus::pop16();
+			auto keynum = bus::pop8();
 			if(input::isJustPressed(keynum)) {
-				bus::push16(1);
+				bus::push8(1);
 			} else {
-				bus::push16(0);
+				bus::push8(0);
 			}
 			break;
 		}
 		case API_isJustReleased: {
-			auto keynum = bus::pop16();
+			auto keynum = bus::pop8();
 			if(input::isJustReleased(keynum)) {
-				bus::push16(1);
+				bus::push8(1);
 			} else {
-				bus::push16(0);
+				bus::push8(0);
 			}
 			break;
 		}

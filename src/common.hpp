@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-constexpr int numInputs = 12;
+constexpr int numInputs = 32;
 
 constexpr auto screenWidth = 192;
 constexpr auto screenHeight = 192;
@@ -14,7 +14,7 @@ constexpr auto framesPerSecond = 60;
 constexpr auto audioSampleRate = 44100;
 constexpr int samplesPerFrame = audioSampleRate / framesPerSecond;
 
-constexpr auto cpuClockRate = 15*1024*1024;
+constexpr auto cpuClockRate = 40*1024*1024;
 constexpr auto cyclesPerFrame = cpuClockRate / framesPerSecond;
 
 constexpr auto tileSide = 8;

@@ -77,8 +77,6 @@ enum {
 	API_drawText,
 	API_getRandomNumber,
 	API_printStack,
-	API_setGlobalVolume,
-	API_setChannelVolume,
 	API_setChannelPan,
 };
 
@@ -169,17 +167,6 @@ void syscall_handler(int value) {
 			}
 			std::cout<<std::endl;
 			std::cout<<"sp="<<t<<" "<<std::dec<<"---"<<std::endl;
-			break;
-		}
-		case API_setGlobalVolume: {
-			int value = bus::pop8();
-			apu::setGlobalVolume(value);
-			break;
-		}
-		case API_setChannelVolume: {
-			int value = bus::pop8();
-			int channelNum = bus::pop8();
-			apu::setChannelVolume(channelNum, value);
 			break;
 		}
 		case API_setChannelPan: {

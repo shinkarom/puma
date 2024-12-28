@@ -28,6 +28,9 @@ namespace ppu {
 	
 	void beforeFrame() {
 		drawnPixels = 0;
+		for (int i = 0; i<screenTotalPixels; i++) {
+			frameBuffer[i] = 0xFF000000;
+		}
 	}
 	
 	
@@ -46,7 +49,7 @@ namespace ppu {
 		bool doDrawAfterWrapVertical = flags & 0x08;         // Bit 3
 		bool noDrawBeforeWrapHorizontal = flags & 0x10; // Bit 4
 		bool noDrawBeforeWrapVertical = flags & 0x20;   // Bit 5
-		uint8_t paletteSelection = (flags >> 6) & 0x07; // Bits 6 to 8
+		bool paletteSelection = flags& 0x40; // Bit 6
 		
 		int rowOffset[h], frameBufferRowBase[h];
 		bool noDrawY[h];
@@ -97,7 +100,7 @@ namespace ppu {
 				if (!paletteSelection) {
 					pixelColor = color::palette16bit[bus::read16(rowBase[row] + 2 * colOffset[col])];
 				} else {
-					pixelColor = color::palette8bit[paletteSelection - 1][bus::read8(rowBase[row] + colOffset[col])];
+					pixelColor = color::palette8bit[bus::read8(rowBase[row] + colOffset[col])];
 				}
 
 				if (pixelColor != transparentColor) {

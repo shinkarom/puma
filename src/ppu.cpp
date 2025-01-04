@@ -129,11 +129,11 @@ namespace ppu {
 			if(letter == 0) {
 				break;
 			}
-			auto letterAddress = fontOrigin + (letter-32) * 8 *8 *2;
+			auto letterAddress = fontOrigin + (letter-32) * 8 *8;
 			if(letter<32 || letter>127) {
 				
 			} else {
-				drawSprite(letterAddress, xOffset, y, 8, 8,0x40);
+				drawSprite(letterAddress, xOffset, y, 8, 8,0x00);
 			}
 			letterOffset++;
 			xOffset+=8;

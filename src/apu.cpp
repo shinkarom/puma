@@ -58,6 +58,7 @@ namespace apu {
 			//	const char* presetname = tsf_get_presetname(sf, i);
 			//	std::cout<<i<<" "<<presetname<<std::endl;
 			//}
+			clearBuffer();
 		}
 	}
 	
@@ -112,17 +113,17 @@ namespace apu {
 			case 5: {
 				auto v = value & 0xFF;
 				noteVelocities[currentChannel] = v;
+				break;
 			}
 			case 6: {
 				auto v = value & 0xFF;
 				auto pan = v / 256.0;
 				tsf_channel_set_pan(sf, currentChannel, pan);
+				break;
 			}
 			case 7: {
-				tsf_channel_note_off_all(sf, currentChannel);
-			}
-			case 8: {
 				tsf_channel_sounds_off_all(sf, currentChannel);
+				break;
 			}
 			default:
 				break;

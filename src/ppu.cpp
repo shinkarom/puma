@@ -13,6 +13,7 @@ namespace ppu {
 	
 	uint32_t frameBuffer[screenTotalPixels];
 	int drawnPixels;
+	uint32_t clearColor;
 	
 	void init() {	
 		 reset();
@@ -23,19 +24,24 @@ namespace ppu {
 	}
 	
 	void reset() {
-		memset(frameBuffer,0,screenTotalPixels*sizeof(uint32_t));
+		memset(frameBuffer, 0, screenTotalPixels * sizeof(uint32_t));
+		clearColor = defaultClearColor;
 	}
 	
 	void beforeFrame() {
 		drawnPixels = 0;
 		for (int i = 0; i<screenTotalPixels; i++) {
-			frameBuffer[i] = 0xFF000000;
+			frameBuffer[i] = clearColor;
 		}
 	}
 	
 	
 	void afterFrame() {
 		
+	}
+	
+	void setClearColor(uint32_t color) {
+		clearColor = (color == transparentColor) ? defaultClearColor : color;
 	}
 	
 	void drawSprite(uint32_t address, int x, int y, int w, int h, uint8_t flags) {

@@ -2,10 +2,11 @@
 
 #include <iostream>
 
+#include "common.hpp"
+
 namespace color {
 	
 	uint32_t palette16bit[65536];
-	bool colorTransparency[65536];
 	uint32_t palette8bit[256];
 	 
 	void init() {
@@ -17,26 +18,8 @@ namespace color {
 		}
 		
 	}
-	
-	/// Convert 32-bit ARGB8888 to 16-bit ARGB4444
-	constexpr uint16_t convert32to16color(uint32_t color) {
-		uint8_t a = (color >> 24) & 0xFF; // Alpha
-		uint8_t r = (color >> 16) & 0xFF; // Red
-		uint8_t g = (color >> 8) & 0xFF;  // Green
-		uint8_t b = color & 0xFF;         // Blue
 
-		// Convert to ARGB1555
-		uint16_t a1 = (a > 127) ? 1 : 0;  // Convert 8-bit alpha to 1-bit
-		uint16_t r5 = r >> 3;             // Convert 8-bit red to 5-bit
-		uint16_t g5 = g >> 3;             // Convert 8-bit green to 5-bit
-		uint16_t b5 = b >> 3;             // Convert 8-bit blue to 5-bit
 
-		// Combine into ARGB1555
-		uint16_t argb1555 = (a1 << 15) | (r5 << 10) | (g5 << 5) | b5;
-		return argb1555;
-	}
-
-	/// Convert 16-bit ARGB4444 to 32-bit ARGB8888
 	constexpr uint32_t convert16to32color(uint16_t color) {
 		// Extract individual channels from ARGB1555
 		uint8_t a1 = (color >> 15) & 0x1; // Alpha
@@ -52,6 +35,9 @@ namespace color {
 
 		// Combine into ARGB8888
 		uint32_t argb8888 = (a << 24) | (r << 16) | (g << 8) | b;
+		if(!a) {
+			return transparentColor;
+		}
 		return argb8888;
 	}
 	
@@ -59,7 +45,7 @@ namespace color {
 	constexpr uint32_t convert8to32color(uint8_t color) {
 		uint32_t c = 0xFF000000 | (color << 16) | (color << 8) | color;
 		if(color == 0) {
-			return 0;
+			return transparentColor;
 		} else {
 			return c;
 		}

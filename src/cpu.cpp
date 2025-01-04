@@ -62,10 +62,6 @@ void instr_callback(unsigned int pc) {
 	printRegisters();
 }
 
-uint32_t popColor() {
-	return color::palette16bit[bus::pop16()];
-}
-
 enum {
 	API_printRegisters = 0,
 	API_writeAudioRegister,
@@ -77,6 +73,8 @@ enum {
 	API_drawText,
 	API_getRandomNumber,
 	API_printStack,
+	API_setClearColor8Bit,
+	API_setClearColor16Bit,
 };
 
 void syscall_handler(int value) {
@@ -166,6 +164,16 @@ void syscall_handler(int value) {
 			}
 			std::cout<<std::endl;
 			std::cout<<"sp="<<t<<" "<<std::dec<<"---"<<std::endl;
+			break;
+		}
+		case API_setClearColor8Bit: {
+			auto color = color::palette8bit[bus::pop8()];
+			ppu::setClearColor(color);
+			break;
+		}
+		case API_setClearColor16Bit: {
+			auto color = color::palette16bit[bus::pop16()];
+			ppu::setClearColor(color);
 			break;
 		}
 		default:

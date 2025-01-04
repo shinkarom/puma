@@ -7,7 +7,7 @@ constexpr int numInputs = 32;
 constexpr auto screenWidth = 192;
 constexpr auto screenHeight = 192;
 constexpr auto screenTotalPixels = screenWidth * screenHeight;
-constexpr auto drawnPixelQuota = screenTotalPixels * 10;
+constexpr auto drawnPixelQuota = screenTotalPixels * 15;
 
 constexpr auto framesPerSecond = 60;
 
@@ -32,6 +32,7 @@ constexpr auto syscallStackAddress = 0xFFFFFFF9;
 constexpr auto syscallAddress = 0xFFFFFFFC;
 
 constexpr auto transparentColor = 0x00000000;
+constexpr auto defaultClearColor = 0xFF000000;
 
 extern bool isRunning;
 extern bool isFileLoaded;

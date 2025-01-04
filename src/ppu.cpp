@@ -56,7 +56,6 @@ namespace ppu {
 		bool noDrawBeforeWrapHorizontal = flags & 0x10; // Bit 4
 		bool noDrawBeforeWrapVertical = flags & 0x20;   // Bit 5
 		bool paletteSelection = flags& 0x40; // Bit 6
-		
 		int rowOffset[h], frameBufferRowBase[h];
 		bool noDrawY[h];
 		uint32_t rowBase[h];
@@ -73,7 +72,7 @@ namespace ppu {
 			}
 			frameBufferRowBase[row] = rowWrapped * screenWidth;
 			
-			if (!paletteSelection) {
+			if (paletteSelection) {
 				rowBase[row] = address + 2 * w * rowOffset[row];
 			} else {
 				rowBase[row] = address + w * rowOffset[row];
@@ -103,7 +102,7 @@ namespace ppu {
 					continue; 
 				}
 				uint32_t pixelColor;
-				if (!paletteSelection) {
+				if (paletteSelection) {
 					pixelColor = color::palette16bit[bus::read16(rowBase[row] + 2 * colOffset[col])];
 				} else {
 					pixelColor = color::palette8bit[bus::read8(rowBase[row] + colOffset[col])];
@@ -134,7 +133,7 @@ namespace ppu {
 			if(letter<32 || letter>127) {
 				
 			} else {
-				drawSprite(letterAddress, xOffset, y, 8, 8,0);
+				drawSprite(letterAddress, xOffset, y, 8, 8,0x40);
 			}
 			letterOffset++;
 			xOffset+=8;

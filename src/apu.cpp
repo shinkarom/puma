@@ -118,6 +118,12 @@ namespace apu {
 				auto pan = v / 256.0;
 				tsf_channel_set_pan(sf, currentChannel, pan);
 			}
+			case 7: {
+				tsf_channel_note_off_all(sf, currentChannel);
+			}
+			case 8: {
+				tsf_channel_sounds_off_all(sf, currentChannel);
+			}
 			default:
 				break;
 		}

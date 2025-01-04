@@ -113,6 +113,11 @@ namespace apu {
 				auto v = value & 0xFF;
 				noteVelocities[currentChannel] = v;
 			}
+			case 6: {
+				auto v = value & 0xFF;
+				auto pan = v / 256.0;
+				tsf_channel_set_pan(sf, currentChannel, pan);
+			}
 			default:
 				break;
 		}

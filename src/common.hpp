@@ -14,18 +14,14 @@ constexpr auto framesPerSecond = 60;
 constexpr auto audioSampleRate = 44100;
 constexpr int samplesPerFrame = audioSampleRate / framesPerSecond;
 
-constexpr auto cpuClockRate = 15*1024*1024;
+constexpr auto cpuClockRate = 25*1024*1024;
 constexpr auto cyclesPerFrame = cpuClockRate / framesPerSecond;
 
 constexpr auto tileSide = 8;
 constexpr auto tileSizeBytes = tileSide * tileSide * 2;
-constexpr auto numTiles = 65536;
-constexpr auto tilesetSizeBytes = numTiles * tileSizeBytes;
 
 constexpr auto totalMemory = 64*1024*1024;
-constexpr auto systemMemorySize = 9 * 1024 * 1024;
-constexpr auto systemMemoryStart = totalMemory - systemMemorySize;
-constexpr auto maxFileSize = totalMemory - 0x200 - systemMemorySize;
+constexpr auto maxFileSize = totalMemory - 0x200;
 
 constexpr auto codeOffset = 0x200;
 constexpr auto stackOffset = totalMemory;

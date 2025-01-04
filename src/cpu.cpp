@@ -77,7 +77,6 @@ enum {
 	API_drawText,
 	API_getRandomNumber,
 	API_printStack,
-	API_setChannelPan,
 };
 
 void syscall_handler(int value) {
@@ -169,12 +168,6 @@ void syscall_handler(int value) {
 			std::cout<<"sp="<<t<<" "<<std::dec<<"---"<<std::endl;
 			break;
 		}
-		case API_setChannelPan: {
-			int value = bus::pop8();
-			int channelNum = bus::pop8();
-			apu::setChannelPan(channelNum, value);
-			break;
-		}
 		default:
 			break;
 	}
@@ -251,7 +244,6 @@ namespace cpu {
 	
 	void frame() {
 		m68k_execute(cyclesPerFrame);
-		m68k_set_irq(2);
 	}
 	
 	void reset() {

@@ -30,7 +30,7 @@ namespace apu {
 		
 	void init() {
 		hasAudio = false;
-		memset(audioBuffer, 0, samplesPerFrame*2*2);
+		clearBuffer();
 		auto exePath = std::filesystem::path(PathFind::FindExecutable()).parent_path();
 		auto sf2name = exePath / "CHAOS8M.SF2";
 		sf = tsf_load_filename(sf2name.string().c_str());
@@ -125,57 +125,12 @@ namespace apu {
 		//std::cout<<"Audio register "<<std::hex<<reg<<" with "<<value<<std::dec<<std::endl;
 	}
 	
-	void noteOn(int channelNum, int keyNum, int vel) {
-		if(!hasAudio || channelNum < 0 || channelNum >= numApuChannels) {
-			return;
-		}
-		tsf_channel_note_off_all(sf, channelNum);
-		tsf_channel_note_on(sf, channelNum, keyNum, vel/127.0);
-	}
-	
-	void noteOff(int channelNum, int keyNum) {
-		if(!hasAudio || channelNum < 0 || channelNum >= numApuChannels) {
-			return;
-		}
-		tsf_channel_note_off(sf, channelNum, keyNum);
-	}
-	void allNotesOff(int channelNum) {
-		if(!hasAudio || channelNum <0 || channelNum >= numApuChannels) {
-			return;
-		}
-		tsf_channel_note_off_all(sf, channelNum);
-	}
-	
-	void setChannelVolume(int channelNum, int value) {
-		if(!hasAudio || channelNum <0 || channelNum >= numApuChannels) {
-			return;
-		}
-		tsf_channel_set_volume(sf, channelNum, value/127.0);
-	}
-	
-	void setChannelPan(int channelNum, int value) {
-		if(!hasAudio || channelNum <0 || channelNum >= numApuChannels) {
-			return;
-		}
-		tsf_channel_set_pan(sf, channelNum, value/255.0);
-	}
-	
-	void setGlobalVolume(int value) {
-		if(!hasAudio || value < 0 || value > 127) {
-			return;
-		}
-		tsf_set_volume(sf, value/127.0);
-	}
-	
-	void setChannelPreset(int channelNum, int value) {
-		if(!hasAudio || channelNum <0 || channelNum >= numApuChannels) {
-			return;
-		}
-		tsf_channel_set_presetindex(sf, channelNum, value);
-	}
-	
 	int16_t* getBuffer() {
 		return audioBuffer;
+	}
+	
+	void clearBuffer() {
+		memset(audioBuffer, 0, samplesPerFrame*2*2);
 	}
 	
 }

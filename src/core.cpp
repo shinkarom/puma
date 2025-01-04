@@ -30,20 +30,22 @@ namespace core {
 		isRunning = true;
 	}
 	
-	bool frame(uint32_t** videoBuffer, int16_t** audioBuffer) {
+	bool frame(uint32_t** videoBuffer, int16_t** audioBuffer) {	
 		*audioBuffer = apu::getBuffer();
 		*videoBuffer = ppu::getBuffer();
 		if(isFileLoaded && isRunning) {
-			// input::beforeFrame();
-		
+			// input::beforeFrame();	
 			ppu::beforeFrame();
 			
 			cpu::frame();
 			ppu::afterFrame();
-			apu::afterFrame();
 			apu::frame();
+			apu::afterFrame();
+			
+			
 			return true;
 		}
+		apu::clearBuffer();
 		return false;
 	}
 	

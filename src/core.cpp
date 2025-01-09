@@ -64,6 +64,12 @@ namespace core {
 		}
 	}
 	
+	void unloadFile() {
+		isRunning = false;
+		isFileLoaded = false;
+		ppu::reset();
+	}
+	
 	void updateInput(int inputNum, bool value) {
 		input::updateInput(inputNum, value);
 	}

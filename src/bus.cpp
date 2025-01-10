@@ -122,6 +122,11 @@ namespace bus {
 		return true;
 	}
 	
+	void unload() {
+		originalFile.clear();
+		memory.clear();
+	}
+	
 	void reset() {
 		std::fill(memory.begin(), memory.end(), 0);
 		std::copy(originalFile.begin(), originalFile.end(), memory.begin()+codeOffset);

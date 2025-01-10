@@ -19,5 +19,6 @@ namespace bus {
 	uint32_t pop32();
 	
 	bool load(std::string fileName);
+	void unload();
 	void reset();
 }

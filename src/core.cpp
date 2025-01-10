@@ -11,6 +11,7 @@
 #include "color.hpp"
 
 namespace core {
+	
 	void init() {
 		input::init();
 		apu::init();
@@ -67,6 +68,7 @@ namespace core {
 	void unloadFile() {
 		isRunning = false;
 		isFileLoaded = false;
+		bus::unload();
 		ppu::reset();
 	}
 	

@@ -9,6 +9,7 @@ namespace core {
 	void deinit();
 	bool frame(uint32_t** videoBuffer, int16_t** audioBuffer);
 	bool tryLoadFile(std::string fileName);
+	bool tryReloadFile();
 	void unloadFile();
 	void updateInput(int inputNum, bool value);
 }

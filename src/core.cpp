@@ -1,6 +1,7 @@
 #include "core.hpp"
 
 #include <iostream>
+#include <string>
 
 #include "common.hpp"
 #include "cpu.hpp"
@@ -11,6 +12,8 @@
 #include "color.hpp"
 
 namespace core {
+	
+	std::string originalFileName;
 	
 	void init() {
 		input::init();
@@ -58,16 +61,27 @@ namespace core {
 	
 	bool tryLoadFile(std::string fileName) {
 		if(!bus::load(fileName.c_str())) {
+			originalFileName = "";
 			return false;
 		} else {
+			originalFileName = fileName;
 			core::reset();
 			return true;
+		}
+	}
+	
+	bool tryReloadFile() {
+		if(originalFileName == "") {
+			return false;
+		} else {
+			return tryLoadFile(originalFileName);
 		}
 	}
 	
 	void unloadFile() {
 		isRunning = false;
 		isFileLoaded = false;
+		originalFileName = "";
 		bus::unload();
 		ppu::reset();
 	}

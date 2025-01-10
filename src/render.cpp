@@ -103,6 +103,9 @@ bool drawMenuBar(bool input) {
 				ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Open File", ".puma", config);
 				// Open file action
 			}
+			if (ImGui::MenuItem("Reload")) {
+				core::tryReloadFile();
+			}
 			if (ImGui::MenuItem("Unload")) {
 				core::unloadFile();
 			}

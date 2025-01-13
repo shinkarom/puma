@@ -14,6 +14,7 @@ namespace ppu {
 	uint32_t frameBuffer[screenTotalPixels];
 	int drawnPixels;
 	uint32_t clearColor;
+	uint8_t transparentIndex;
 	
 	void init() {	
 		 reset();
@@ -26,6 +27,7 @@ namespace ppu {
 	void reset() {
 		memset(frameBuffer, 0, screenTotalPixels * sizeof(uint32_t));
 		clearColor = defaultClearColor;
+		transparentIndex = defaultTransparentIndex;
 	}
 	
 	void beforeFrame() {
@@ -41,7 +43,7 @@ namespace ppu {
 	}
 	
 	void setClearColor(uint32_t color) {
-		clearColor = (color == transparentColor) ? defaultClearColor : color;
+		clearColor = (color & 0xFF000000) == 0x00000000 ? defaultClearColor : color;
 	}
 	
 	void drawSprite(uint32_t address, int x, int y, int w, int h, uint8_t flags) {
@@ -56,10 +58,12 @@ namespace ppu {
 		bool noDrawBeforeWrapHorizontal = flags & 0x10; // Bit 4
 		bool noDrawBeforeWrapVertical = flags & 0x20;   // Bit 5
 		bool paletteSelection = flags& 0x40; // Bit 6
+		
 		int rowOffset[h], frameBufferRowBase[h];
 		bool noDrawY[h];
 		uint32_t rowBase[h];
 		int rowWrapped;
+		
 		for (int row = 0; row < h; row++) {
 			rowOffset[row] = flipVertical ? (h - 1 - row) : row;
 			rowWrapped = (y + row) % screenHeight;
@@ -101,15 +105,15 @@ namespace ppu {
 				if (noDrawX[col]) {
 					continue; 
 				}
-				uint32_t pixelColor;
+				uint8_t colorIndex;
 				if (paletteSelection) {
-					pixelColor = color::palette16bit[bus::read16(rowBase[row] + 2 * colOffset[col])];
+					// tbi
 				} else {
-					pixelColor = color::palette8bit[bus::read8(rowBase[row] + colOffset[col])];
+					colorIndex = bus::read8(rowBase[row] + colOffset[col]);
 				}
 
-				if (pixelColor != transparentColor) {
-					frameBuffer[frameBufferRowBase[row] + colWrapped[col]] = pixelColor;
+				if (colorIndex != 0) {
+					frameBuffer[frameBufferRowBase[row] + colWrapped[col]] = color::palette8bit[colorIndex];;
 					drawnPixels++;
 				}
 			}

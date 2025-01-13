@@ -79,55 +79,51 @@ namespace apu {
 	}
 	
 	void writeReg(int reg, int value) {
-		switch(reg) {
-			case 0: {
-				auto v = value > 127 ? value - 127: value;
-				tsf_set_volume(sf, v/127.0);
-				break;
-			}
-			case 1: {
-				auto v = value & 0xF;
-				currentChannel = v;
-				break;
-			}
-			case 2: {
-				auto v = value > 127 ? value - 127: value;
-				tsf_channel_note_off_all(sf, currentChannel);
-				if(v != 0) {
-					tsf_channel_note_on(sf, currentChannel, v, noteVelocities[currentChannel]/127.0);
+		if(reg == 0xFF) {
+			auto v = value > 127 ? value - 127: value;
+			tsf_set_volume(sf, v/127.0);
+		} else {
+			auto chan = reg & 0x0F;
+			switch(reg & 0xF0) {
+				case 0x00: {
+					auto v = value > 127 ? value - 127: value;
+					tsf_channel_note_off_all(sf, chan);
+					if(v != 0) {
+						tsf_channel_note_on(sf, chan, v, noteVelocities[chan]/127.0);
+					}
+					break;
 				}
-				break;
+				case 0x10:{
+					auto v = value & 0xFF;
+					notePresets[chan] = (notePresets[chan]&0xFF00)| (v);
+					tsf_channel_set_presetindex(sf, chan, notePresets[chan]);
+					break;
+				}
+				case 0x20: {
+					auto v = value & 0xFF;
+					notePresets[chan] = (notePresets[chan]&0x00FF)| (v<<8);
+					tsf_channel_set_presetindex(sf, chan, notePresets[chan]);
+					break;
+				}
+				case 0x30: {
+					auto v = value & 0xFF;
+					noteVelocities[chan] = v;
+					break;
+				}
+				case 0x40: {
+					auto v = value & 0xFF;
+					auto pan = v / 256.0;
+					tsf_channel_set_pan(sf, chan, pan);
+					break;
+				}
+				case 0x50: {
+					tsf_channel_sounds_off_all(sf, chan);
+					break;
+				}
+				default:
+					break;
 			}
-			case 3:{
-				auto v = value & 0xFF;
-				notePresets[currentChannel] = (notePresets[currentChannel]&0x00FF)| (v<<8);
-				tsf_channel_set_presetindex(sf, currentChannel, notePresets[currentChannel]);
-				break;
-			}
-			case 4: {
-				auto v = value & 0xFF;
-				notePresets[currentChannel] = (notePresets[currentChannel]&0xFF00)| (v);
-				tsf_channel_set_presetindex(sf, currentChannel, notePresets[currentChannel]);
-				break;
-			}
-			case 5: {
-				auto v = value & 0xFF;
-				noteVelocities[currentChannel] = v;
-				break;
-			}
-			case 6: {
-				auto v = value & 0xFF;
-				auto pan = v / 256.0;
-				tsf_channel_set_pan(sf, currentChannel, pan);
-				break;
-			}
-			case 7: {
-				tsf_channel_sounds_off_all(sf, currentChannel);
-				break;
-			}
-			default:
-				break;
-		}
+		}			
 		
 		//std::cout<<"Audio register "<<std::hex<<reg<<" with "<<value<<std::dec<<std::endl;
 	}

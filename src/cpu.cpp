@@ -74,7 +74,6 @@ enum {
 	API_getRandomNumber,
 	API_printStack,
 	API_setClearColor8Bit,
-	API_setClearColor16Bit,
 };
 
 void syscall_handler(int value) {
@@ -168,11 +167,6 @@ void syscall_handler(int value) {
 		}
 		case API_setClearColor8Bit: {
 			auto color = color::palette8bit[bus::pop8()];
-			ppu::setClearColor(color);
-			break;
-		}
-		case API_setClearColor16Bit: {
-			auto color = color::palette16bit[bus::pop16()];
 			ppu::setClearColor(color);
 			break;
 		}

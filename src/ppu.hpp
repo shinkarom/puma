@@ -15,6 +15,7 @@ namespace ppu {
 	void drawText(uint16_t fontOrigin, uint32_t textOrigin, uint16_t x, uint16_t y);
 	void runFor(int scanlinesToRun);
 	void setClearColor(uint32_t color);
+	void setTransparentIndex(uint8_t index);
 	
 	uint32_t* getBuffer();
 }

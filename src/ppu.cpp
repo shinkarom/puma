@@ -144,4 +144,8 @@ namespace ppu {
 		} while(xOffset<screenWidth);
 	}
 	
+	void setTransparentIndex(uint8_t index) {
+		transparentIndex = index;
+	}
+	
 }

@@ -73,7 +73,8 @@ enum {
 	API_drawText,
 	API_getRandomNumber,
 	API_printStack,
-	API_setClearColor8Bit,
+	API_setClearColorIndex,
+	API_setTransparentIndex,
 };
 
 void syscall_handler(int value) {
@@ -165,9 +166,14 @@ void syscall_handler(int value) {
 			std::cout<<"sp="<<t<<" "<<std::dec<<"---"<<std::endl;
 			break;
 		}
-		case API_setClearColor8Bit: {
-			auto color = color::palette8bit[bus::pop8()];
-			ppu::setClearColor(color);
+		case API_setClearColorIndex: {
+			auto index = color::palette8bit[bus::pop8()];
+			ppu::setClearColor(index);
+			break;
+		}
+		case API_setTransparentIndex: {
+			auto index = color::palette8bit[bus::pop8()];
+			ppu::setTransparentIndex(index);
 			break;
 		}
 		default:

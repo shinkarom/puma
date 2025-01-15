@@ -112,7 +112,7 @@ namespace apu {
 				}
 				case 0x40: {
 					auto v = value & 0xFF;
-					auto pan = v / 256.0;
+					auto pan = v / 255.0;
 					tsf_channel_set_pan(sf, chan, pan);
 					break;
 				}

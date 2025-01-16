@@ -75,6 +75,7 @@ enum {
 	API_printStack,
 	API_setClearColorIndex,
 	API_setTransparentIndex,
+	API_setPaletteColor,
 };
 
 void syscall_handler(int value) {
@@ -172,8 +173,11 @@ void syscall_handler(int value) {
 			break;
 		}
 		case API_setTransparentIndex: {
-			auto index = color::palette8bit[bus::pop8()];
+			auto index = bus::pop8();
 			ppu::setTransparentIndex(index);
+			break;
+		}
+		case API_setPaletteColor: {
 			break;
 		}
 		default:

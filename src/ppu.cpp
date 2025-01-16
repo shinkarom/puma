@@ -112,7 +112,7 @@ namespace ppu {
 					colorIndex = bus::read8(rowBase[row] + colOffset[col]);
 				}
 
-				if (colorIndex != 0) {
+				if (colorIndex != transparentIndex) {
 					frameBuffer[frameBufferRowBase[row] + colWrapped[col]] = color::palette8bit[colorIndex];;
 					drawnPixels++;
 				}

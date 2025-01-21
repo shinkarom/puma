@@ -70,12 +70,10 @@ enum {
 	API_isJustPressed,
 	API_isJustReleased,
 	API_drawSprite,
-	API_drawText,
 	API_getRandomNumber,
 	API_printStack,
 	API_setClearColorIndex,
 	API_setTransparentIndex,
-	API_setPaletteColor,
 };
 
 void syscall_handler(int value) {
@@ -134,14 +132,6 @@ void syscall_handler(int value) {
 			ppu::drawSprite(address, x, y, w, h, options);
 			break;
 		}
-		case API_drawText: {
-			auto y = bus::pop16();
-			auto x = bus::pop16();
-			auto textOrigin = bus::pop32();
-			auto fontOrigin = bus::pop16();
-			ppu::drawText(fontOrigin, textOrigin, x, y);
-			break;
-		}
 		case API_getRandomNumber: {
 			auto mmax = bus::pop32();
 			auto mmin = bus::pop32();
@@ -175,9 +165,6 @@ void syscall_handler(int value) {
 		case API_setTransparentIndex: {
 			auto index = bus::pop8();
 			ppu::setTransparentIndex(index);
-			break;
-		}
-		case API_setPaletteColor: {
 			break;
 		}
 		default:

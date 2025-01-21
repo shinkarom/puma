@@ -57,7 +57,6 @@ namespace ppu {
 		bool doDrawAfterWrapVertical = flags & 0x08;         // Bit 3
 		bool noDrawBeforeWrapHorizontal = flags & 0x10; // Bit 4
 		bool noDrawBeforeWrapVertical = flags & 0x20;   // Bit 5
-		bool paletteSelection = flags& 0x40; // Bit 6
 		
 		int rowOffset[h], frameBufferRowBase[h];
 		bool noDrawY[h];
@@ -76,11 +75,7 @@ namespace ppu {
 			}
 			frameBufferRowBase[row] = rowWrapped * screenWidth;
 			
-			if (paletteSelection) {
-				rowBase[row] = address + 2 * w * rowOffset[row];
-			} else {
-				rowBase[row] = address + w * rowOffset[row];
-			}
+			rowBase[row] = address + w * rowOffset[row];
 		}
 		
 		int colOffset[w],colWrapped[w];
@@ -105,15 +100,11 @@ namespace ppu {
 				if (noDrawX[col]) {
 					continue; 
 				}
-				uint8_t colorIndex;
-				if (paletteSelection) {
-					// tbi
-				} else {
-					colorIndex = bus::read8(rowBase[row] + colOffset[col]);
-				}
+				uint8_t colorIndex = bus::read8(rowBase[row] + colOffset[col]);
+				uint32_t fullColor = color::palette8bit[colorIndex];
 
 				if (colorIndex != transparentIndex) {
-					frameBuffer[frameBufferRowBase[row] + colWrapped[col]] = color::palette8bit[colorIndex];;
+					frameBuffer[frameBufferRowBase[row] + colWrapped[col]] = fullColor;
 					drawnPixels++;
 				}
 			}
@@ -123,25 +114,6 @@ namespace ppu {
 	
 	uint32_t* getBuffer() {
 		return frameBuffer;
-	}
-
-	void drawText(uint16_t fontOrigin, uint32_t textOrigin, uint16_t x, uint16_t y) {
-		auto letterOffset = textOrigin;
-		auto xOffset = x;
-		do {
-			char letter = bus::read8(letterOffset);
-			if(letter == 0) {
-				break;
-			}
-			auto letterAddress = fontOrigin + (letter-32) * 8 *8;
-			if(letter<32 || letter>127) {
-				
-			} else {
-				drawSprite(letterAddress, xOffset, y, 8, 8,0x00);
-			}
-			letterOffset++;
-			xOffset+=8;
-		} while(xOffset<screenWidth);
 	}
 	
 	void setTransparentIndex(uint8_t index) {

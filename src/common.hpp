@@ -14,7 +14,7 @@ constexpr auto framesPerSecond = 60;
 constexpr auto audioSampleRate = 44100;
 constexpr int samplesPerFrame = audioSampleRate / framesPerSecond;
 
-constexpr auto cpuClockRate = 25*1024*1024;
+constexpr auto cpuClockRate = 15*1024*1024;
 constexpr auto cyclesPerFrame = cpuClockRate / framesPerSecond;
 
 constexpr auto tileSide = 8;

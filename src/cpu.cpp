@@ -74,6 +74,7 @@ enum {
 	API_printStack,
 	API_setClearColorIndex,
 	API_setTransparentIndex,
+	API_getSoundTimer,
 };
 
 void syscall_handler(int value) {

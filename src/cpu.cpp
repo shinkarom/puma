@@ -62,16 +62,16 @@ void instr_callback(unsigned int pc) {
 }
 
 enum {
-	API_printRegisters = 0,
+	API_endFrame = 0,
 	API_writeAudioRegister,
-	API_endFrame,
+	API_getRandomNumber,
 	API_isPressed,
 	API_isJustPressed,
 	API_isJustReleased,
-	API_drawSprite,
-	API_getRandomNumber,
-	API_printStack,
 	API_cls,
+	API_drawSprite,
+	API_printRegisters = 254,
+	API_printStack,
 };
 
 void syscall_handler(int value) {

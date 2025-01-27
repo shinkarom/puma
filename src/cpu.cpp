@@ -72,9 +72,8 @@ enum {
 	API_drawSprite,
 	API_getRandomNumber,
 	API_printStack,
-	API_setClearColorIndex,
 	API_setTransparentIndex,
-	API_getSoundTimer,
+	API_cls,
 };
 
 void syscall_handler(int value) {
@@ -158,14 +157,14 @@ void syscall_handler(int value) {
 			std::cout<<"sp="<<t<<" "<<std::dec<<"---"<<std::endl;
 			break;
 		}
-		case API_setClearColorIndex: {
-			auto index = color::palette8bit[bus::pop8()];
-			ppu::setClearColor(index);
-			break;
-		}
 		case API_setTransparentIndex: {
 			auto index = bus::pop8();
 			ppu::setTransparentIndex(index);
+			break;
+		}
+		case API_cls: {
+			auto color = color::palette8bit[bus::pop8()];
+			ppu::clearScreen(color);
 			break;
 		}
 		default:

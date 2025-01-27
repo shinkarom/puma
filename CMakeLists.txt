@@ -45,7 +45,6 @@ add_executable(${PROJ_NAME}
 	src/bus.cpp
 	src/ppu.cpp
 	src/input.cpp
-	src/color.cpp
 	src/core.cpp
 )
 

@@ -9,7 +9,6 @@
 #include "ppu.hpp"
 #include "apu.hpp"
 #include "input.hpp"
-#include "color.hpp"
 
 namespace core {
 	
@@ -18,7 +17,6 @@ namespace core {
 	void init() {
 		input::init();
 		apu::init();
-		color::init();
 		ppu::init();
 		cpu::init();
 	}

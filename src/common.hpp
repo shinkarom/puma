@@ -31,7 +31,5 @@ constexpr auto numApuChannels = 4;
 constexpr auto syscallStackAddress = 0xFFFFFFF9;
 constexpr auto syscallAddress = 0xFFFFFFFC;
 
-constexpr auto defaultTransparentIndex = 0;
-
 extern bool isRunning;
 extern bool isFileLoaded;

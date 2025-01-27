@@ -11,7 +11,6 @@
 #include "ppu.hpp"
 #include "apu.hpp"
 #include "input.hpp"
-#include "color.hpp"
 
 std::default_random_engine gen;
 
@@ -72,7 +71,6 @@ enum {
 	API_drawSprite,
 	API_getRandomNumber,
 	API_printStack,
-	API_setTransparentIndex,
 	API_cls,
 };
 
@@ -124,12 +122,13 @@ void syscall_handler(int value) {
 		}
 		case API_drawSprite: {
 			auto options = bus::pop8();
+			auto transparentIndex = bus::pop8();
 			auto h = bus::pop16();
 			auto w = bus::pop16();
 			auto y = bus::pop16();
 			auto x = bus::pop16();
 			auto address = bus::pop32();
-			ppu::drawSprite(address, x, y, w, h, options);
+			ppu::drawSprite(address, x, y, w, h, transparentIndex, options);
 			break;
 		}
 		case API_getRandomNumber: {
@@ -157,14 +156,9 @@ void syscall_handler(int value) {
 			std::cout<<"sp="<<t<<" "<<std::dec<<"---"<<std::endl;
 			break;
 		}
-		case API_setTransparentIndex: {
-			auto index = bus::pop8();
-			ppu::setTransparentIndex(index);
-			break;
-		}
 		case API_cls: {
-			auto color = color::palette8bit[bus::pop8()];
-			ppu::clearScreen(color);
+			auto index = bus::pop8();
+			ppu::clearScreen(index);
 			break;
 		}
 		default:

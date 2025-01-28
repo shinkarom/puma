@@ -121,8 +121,8 @@ void syscall_handler(int value) {
 			break;
 		}
 		case API_drawSprite: {
-			auto options = bus::pop8();
 			auto transparentIndex = bus::pop8();
+			auto options = bus::pop8();
 			auto h = bus::pop16();
 			auto w = bus::pop16();
 			auto y = bus::pop16();

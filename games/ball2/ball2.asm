@@ -106,6 +106,41 @@ Func_Update:
 	;---
 
 Draw:
+	move.b #190, d0
+	move.b coordy, d1
+	add.b #3, d1
+1:	
+	Push32 #rect
+	Push8 d0
+	Push8 d1
+	Push8 #2
+	Push8 #2
+	Push8 #0x00
+	Push8 #0
+	CallApi #API_drawSprite
+	
+	sub.b #2, d0
+	cmp.b #0xFE, d0
+	bne 1b
+	
+	move.b coordx, d0
+	add.b #3, d0
+	move.b #190, d1
+	
+1:	
+	Push32 #rect
+	Push8 d0
+	Push8 d1
+	Push8 #2
+	Push8 #2
+	Push8 #0x00
+	Push8 #0
+	CallApi #API_drawSprite
+	
+	sub.b #2, d1
+	cmp.b #0xFE, d1
+	bne 1b
+
 	Push32 #image
 	Push8 coordx
 	Push8 coordy
@@ -141,6 +176,7 @@ RandomizeY:
 .nolist
 	
 image: .incbin "ball.bin"
+rect: .incbin "rect.bin"
 
 .list
 

@@ -13,7 +13,6 @@ tsf* sf;
 bool hasAudio = false;
 int noteVelocities[numApuChannels];
 int notePresets[numApuChannels];
-int noteValues[numApuChannels];
 uint32_t soundTimers[numApuChannels];
 int currentChannel;
 
@@ -26,7 +25,6 @@ namespace apu {
 			tsf_channel_set_volume(sf, i, 1.0);
 			noteVelocities[i] = 127;
 			notePresets[i] = 0;
-			noteValues[i] = 60;
 			soundTimers[i] = 0;
 		}
 		currentChannel = 0;

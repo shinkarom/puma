@@ -80,6 +80,7 @@ void initAudio() {
 }
 
 void deinitAudio() {
+	SDL_DestroyAudioStream(stream);
 	SDL_CloseAudioDevice(audioID);
 }
 

@@ -3,3 +3,4 @@ build/*
 bin/*.exe
 /imgui.ini
 /bin/SDL3.dll
+/bin/imgui.ini

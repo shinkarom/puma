@@ -44,8 +44,8 @@ Func_Update:
 ;a1 = string address
 ;d0 = x coordinate to start printing
 ;d1 = y coordinate
-;clobbers d3
 PrintString:	
+	move.l d3, -(sp)
 3:		
 	cmp.b #191, d0
 	bhi 1f
@@ -83,6 +83,7 @@ PrintString:
 	add.b #8, d0
 	bra 3b
 1:
+	move.l (sp)+, d3
 	rts
 	
 	;---
